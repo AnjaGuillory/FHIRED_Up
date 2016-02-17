@@ -27,7 +27,7 @@ def Get_Encounter_List(PatientID):
     '''Submits a PatientID to the FHIR Server and returns a list containing
        the patient's encounter IDs and the start dates of the encounters '''
     Encounter_list = []
-    Encounter_Data = json.load(urllib2.urlopen(ENCOUNTERS_BY_PATIENT+ PatientID))
+    Encounter_Data = json.load(urllib2.urlopen(ENCOUNTERS_BY_PATIENT+ str(PatientID)))
     for enc in Encounter_Data['entry']:
         Encounter_list.append((enc['resource']['id'],enc['resource']['period']['start']) )
     return Encounter_list
@@ -36,10 +36,11 @@ def Get_Encounter_List(PatientID):
 
 def Get_Condition_List(EncounterID):
     '''Submits a EncounterID to the FHIR Server and returns a list containing
-       the patient's conditions that were recorded at that encounter '''
+       the patient's conditions that were recorded at that encounter.
+       EncounterID should be the numeric encounter identifyer'''
     try:
         Condition_List = []
-        Condition_Data = json.load(urllib2.urlopen(CONDITION_BY_ENCOUNTER+ EncounterID))
+        Condition_Data = json.load(urllib2.urlopen(CONDITION_BY_ENCOUNTER+ str(EncounterID)))
         for cond in Condition_Data['entry'][0]['resource']['code']['coding']:
             Condition_List.append((cond['code'],cond['display'],cond['system']) )
         return Condition_List
@@ -71,7 +72,8 @@ def Get_All_Patients_Conditions(PatientID):
 ############### FOR TESTING ##################################################
 if __name__ == "__main__":
     import pprint
-    PatientID = 'Patient/4'
+    PatientID = 4
+
     #encounters = Get_Encounter_List(PatientID)
     #pprint.pprint(encounters)
 
