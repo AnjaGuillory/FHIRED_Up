@@ -11,8 +11,12 @@ import json
 import urllib2
 
 
+from datetime import datetime
+
+
+
 # These are the get queries I use to access the GaTech FHIR server
-ENCOUNTERS_BY_PATIENT = 'http://polaris.i3l.gatech.edu:8080/gt-fhir-webapp/base/Encounter?patient='
+ENCOUNTERS_BY_PATIENT = 'http://polaris.i3l.gatech.edu:8080/gt-fhir-webapp/base/Encounter?patient=Patient/'
 CONDITION_BY_ENCOUNTER = 'http://polaris.i3l.gatech.edu:8080/gt-fhir-webapp/base/Condition?encounter='
 
 
@@ -29,15 +33,14 @@ def Get_Encounter_List(PatientID):
     Encounter_list = []
     Encounter_Data = json.load(urllib2.urlopen(ENCOUNTERS_BY_PATIENT+ str(PatientID)))
     for enc in Encounter_Data['entry']:
-        Encounter_list.append((enc['resource']['id'],enc['resource']['period']['start']) )
+        Encounter_list.append((enc['resource']['id'],int(enc['resource']['period']['start'][:4])) )
     return Encounter_list
 
 
 
 def Get_Condition_List(EncounterID):
     '''Submits a EncounterID to the FHIR Server and returns a list containing
-       the patient's conditions that were recorded at that encounter.
-       EncounterID should be the numeric encounter identifyer'''
+       the patient's conditions that were recorded at that encounter '''
     try:
         Condition_List = []
         Condition_Data = json.load(urllib2.urlopen(CONDITION_BY_ENCOUNTER+ str(EncounterID)))
@@ -53,7 +56,13 @@ def Get_Condition_List(EncounterID):
 
 def Get_All_Patients_Conditions(PatientID):
     ''' Loops over all of a patients encounters, creating a full
-        list of that patient's conditions'''
+        list of that patient's conditions.
+
+        The output of this query is a list:
+        [EncounterID, EncounterServiceYear, [list of [ConditionCode, CoinditionName, ConditionCodingSystem]]]
+
+
+        '''
     try:
         All_Patients_Conditions = []
         encounters = Get_Encounter_List(PatientID)
@@ -72,8 +81,7 @@ def Get_All_Patients_Conditions(PatientID):
 ############### FOR TESTING ##################################################
 if __name__ == "__main__":
     import pprint
-    PatientID = 4
-
+    PatientID = '4'
     #encounters = Get_Encounter_List(PatientID)
     #pprint.pprint(encounters)
 
