@@ -72,8 +72,8 @@ class FHIRedUp:
             :param patient_id: """
         return self.find_missing_diagnoses(self.get_hccs_by_time_period(patient_id, current_year)[0], self.get_hccs_by_time_period(patient_id, current_year)[1])
 
-    def add_diagnosis_to_current(self, hcc, missing_diagnoses, current_year_hccs):
-        """Takes variable HCC for the corresponding diagnoses for addition,
+    def add_diagnosis_to_current(self, missing_diagnoses, current_year_hccs, *hccs):
+        """Takes variable input HCC for the corresponding diagnoses for addition,
             generated list of missing diagnoses, and the current list of diagnoses,
             returns new list for the current year including desired additions
             :param hcc:
@@ -84,8 +84,8 @@ class FHIRedUp:
                 if code is hcc:
                     current_year_hccs.append((code,diag))
                     break
-            return current_year_hccs    
-    def remove_diagnosis_to_current(self, *hccs, current_year_hccs):
+        return current_year_hccs    
+    def remove_diagnosis_to_current(self, current_year_hccs, *hccs):
         """Takes variable input HCC for the corresponding diagnoses for addition,
             and the current list of diagnoses,
             returns new list for the current year without chosen diagnoses as desired
@@ -96,7 +96,7 @@ class FHIRedUp:
                 if code is hcc:
                     current_year_hccs.remove((code,diag))
                     break
-            return current_year_hccs
+        return current_year_hccs
 
 
 
