@@ -1,5 +1,6 @@
 from LookupTables import *
 from FHIRQueries import *
+from Snowmed_Mapping import ConvertSnowmedToHCC
 
 
 class FHIRedUp:
@@ -31,21 +32,11 @@ class FHIRedUp:
                 # One of our assumptions was that the GaTech FHIR server stored
                 # diagnosis data using ICD9 codes.  This assumption was wrong.
                 # Since the FHIR server uses SNOMED codes to store clinical information
-                # we developed code an lookup tables to convert SNOMED codes to ICD9
-                # codes.  After extensive testing, we were unable to develop code that
-                # could perform this very complicated mapping accurately.
-                # So we decided to return SNOMED data to the end user, instead of
-                # returning ICD9s or HCCs.
-                #
-                # This is the code we would have used if we could have got the
-                # mapping to work.  Our problem was that a one-to-one mapping between
-                # these two coding systems simply doesn't exist.
-                #
-                # This is what the original solution would have been:
-                # DiagnosisCode = snowmed_to_hcc(Cond[0])
-                #
-                # This is the work-around code:
-                diagnosis_code = (Cond[0], Cond[1])
+                # we developed a lookup tables to convert SNOMED codes to ICD9
+                # codes. 
+                # diagnosis_code = a tuple containing HCC, HCC description and Risk Score
+                diagnosis_code = ConvertSnowmedToHCC(Cond[0])
+                
 
                 if Enc[1] == current_year:
                     current_year_hccs.append(diagnosis_code)
