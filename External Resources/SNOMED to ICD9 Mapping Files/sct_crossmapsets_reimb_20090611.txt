@@ -1,0 +1,2 @@
+MAPSETID	MAPSETNAME	MAPSETTYPE	MAPSETSCHEMEID	MAPSETSCHEMENAME	MAPSETSCHEMEVERSION	MAPSETREALMID	MAPSETUSECASEID	MAPSETSEPARATOR	MAPSETRULETYPE
+110040	SNOMED CT® to ICD-9-CM Rule Based Mapping to Support Reimbursement	4	2.16.840.1.113883.6.5.2.1	International Classification of Diseases and Related Health Problems, 9th Revision, Clinical Modifications.	2009		Reimbursement		
