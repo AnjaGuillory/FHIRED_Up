@@ -39,14 +39,14 @@
 4. Ability to lookup a patient by their ID or Name.
 5. Ability to extract HCC values from a patient's EHR and segment these by calendar year.
 6. Ability to list HCC values present in a patient's prior calendar years that are not yet present in the current calendar year.
-7. Ability to notify the doctor of HCC values listed in prior calendar years that are not present in the current calendar year (with the exception of any HCCs already excluded for the calendar year) *(see: 2.1.9)*.
-7. Ability to notify the doctor that no HCC values listed in prior calendar years are missing in the current calendar year.
-8. Ability for a doctor to approve one or more candidate missing HCCs *(identified in 2.1.6)* in the current calendar year should be added to the patient's EHR, along with notes for identified comorbidities.
-9. Ability for a doctor to dismiss *(reject)* one or more candidate missing HCCs *(identified in 2.1.6)* be added to the patient's EHR for the remainder of the current calendar year, along with optional notes justifying the rejection. 
-10. Rejected HCCs by a doctor should be excluded from the list of candidate HCCs for the given patient for the remainder of the current calendar year *(see: 2.1.6)*
-11. Log all activity including notifications, confirmations, denials, etc. in an audit trail which includes current user ID, patient ID, and relevant metadata.
-12. Provide an audit trail report of a patient's HCCs by calendar year and any approval or rejections of candidate HCCs
-13. Provide an audit trail report by doctor of all approvals and rejections of candidate HCC's by patient.
+7. Ability to notify the doctor of HCC values listed in prior calendar years that are not present in the current calendar year (with the exception of any HCCs already excluded for the calendar year) *(see: 2.1.10 and 2.1.11)*.
+8. Ability to notify the doctor that no HCC values listed in prior calendar years are missing in the current calendar year.
+9. Ability for a doctor to approve one or more candidate missing HCCs *(identified in 2.1.6)* in the current calendar year should be added to the patient's EHR, along with notes for identified comorbidities.
+10. Ability for a doctor to dismiss *(reject)* one or more candidate missing HCCs *(identified in 2.1.6)* be added to the patient's EHR for the remainder of the current calendar year, along with optional notes justifying the rejection. 
+11. Rejected HCCs by a doctor should be excluded from the list of candidate HCCs for the given patient for the remainder of the current calendar year *(see: 2.1.6)*
+12. Log all activity including notifications, confirmations, denials, etc. in an audit trail which includes current user ID, patient ID, and relevant metadata.
+13. Provide an audit trail report of a patient's HCCs by calendar year and any approval or rejections of candidate HCCs
+14. Provide an audit trail report by doctor of all approvals and rejections of candidate HCC's by patient.
 
 ####2.2 Non-Functional Requirements
 
