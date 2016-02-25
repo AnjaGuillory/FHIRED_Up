@@ -33,7 +33,7 @@
 
 ####2.1 Functional Requirements
 
-1. Program name shall be named " FHIRed Up - Risk Adjustment Data Validation (RADV)".  
+1. Program shall be named "Risk Adjustment Data Validation (RADV) (by FHIRed Up)".  
 2. Program shall be written Python v2.7  
 3. Ability to map codes between ICD9, ICD10, SNOMED, MA APCD, & CMS HCCs 
 4. Ability to lookup a patient by their ID or Name.
