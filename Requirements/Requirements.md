@@ -1,5 +1,5 @@
 ## Requirements Document
-###ACA Risk Adjustment EHR Data Validation (RADV) Tool 
+###Risk Adjustment Data Validation (RADV) Tool 
 ######by FHIRed Up
 ---
 
@@ -15,45 +15,49 @@
 ####1.2 Data Sources
 * Georgia Tech's FHIR Server
 * Massachusetts APCD data dictionary
-* ICD9, ICD10, SNOMED, MA APCD, & CMS HCC *(codes and descriptions)* with mappings between each.
-* MySQL (or NoSQL) database for persisting login credentials, audit trail *(including doctor approvals & dismissals of candidate HCCs for a patient)*, etc.
+* ICD9, ICD10, SNOMED, MA APCD, & CMS HCC *(codes and descriptions)* with mappings between each. **_(NOTE: Is APCD still needed?)_**
+* MySQL (or NoSQL) database for persisting login credentials, audit trail *(including doctor approvals & dismissals of candidate HCCs for a patient)*, etc. **_(NOTE: DB may not be needed if everything is captured in FHIR)_**
 
 ####1.3 User Interfaces
 
 * Users will access the tool via a browser interface.
-* Users will login with a username/password challenge.
+* Users will login with a username/password challenge. **_(NOTE: Authentication may be outside the scope of this project)_**
 * Users will lookup a patient by patient id -or- patient name. 
-
+* Users will be presented with candidate HCCs not present in data from current calendar but present in prior calendar years. **_(NOTE: How many years back do we look)_**
+* Users will be able to select which candidate HCCs to add to the patient's EHR.
+* Users will be able to select which candidate HCCs to reject for the remainder of the calendar year.  Notes will be added to the patient's EHR.
 
 ####1.4 User Characteristics
 
-* Users of this application will be nurses, doctors and other health care professionals responsible for entering patient HCC codes.
+* Users of this application will be nurses and doctors responsible for entering patient HCC codes.
 
 ###2 System Requirements
 
 ####2.1 Functional Requirements
 
-1. Program shall be named "Risk Adjustment Data Validation (RADV) (by FHIRed Up)".  
+1. Program shall be named "Risk Adjustment Data Validation (RADV) (by FHIRed Up)".  **_(NOTE: to discuss w/ team)_**
 2. Program shall be written Python v2.7  
 3. Ability to map codes between ICD9, ICD10, SNOMED, MA APCD, & CMS HCCs 
 4. Ability to lookup a patient by their ID or Name.
 5. Ability to extract HCC values from a patient's EHR and segment these by calendar year.
-6. Ability to list HCC values present in a patient's prior calendar years that are not yet present in the current calendar year.
-7. Ability to notify the doctor of HCC values listed in prior calendar years that are not present in the current calendar year (with the exception of any HCCs already excluded for the calendar year) *(see: 2.1.10 and 2.1.11)*.
-8. Ability to notify the doctor that no HCC values listed in prior calendar years are missing in the current calendar year.
-9. Ability for a doctor to approve one or more candidate missing HCCs *(identified in 2.1.6)* in the current calendar year should be added to the patient's EHR, along with notes for identified comorbidities.
-10. Ability for a doctor to dismiss *(reject)* one or more candidate missing HCCs *(identified in 2.1.6)* be added to the patient's EHR for the remainder of the current calendar year, along with optional notes justifying the rejection. 
+6. Ability to extract HCC values present in a patient's prior calendar years that are not yet present in the current calendar year (with the exception of any HCCs already excluded for the calendar year) *(see: 2.1.10 and 2.1.11)*..
+7. Ability to present the user (nurse or doctor) with a list of candidate HCC values from prior calendar years that are not present in the current calendar year (with the exception of any HCCs already excluded for the calendar year) *(see: 2.1.10 and 2.1.11)*.
+8. Ability to present the user a note that no candidate HCC values listed in prior calendar years are missing in the current calendar year.
+9. Ability for a doctor to approve one or more candidate HCCs *(identified in 2.1.6)* in the current calendar year should be added to the patient's EHR, along with notes for identified comorbidities.
+10. Ability for a doctor to reject one or more candidate  HCCs *(identified in 2.1.6)* be added to the patient's EHR for the remainder of the current calendar year, along with optional notes justifying the rejection. 
 11. Rejected HCCs by a doctor should be excluded from the list of candidate HCCs for the given patient for the remainder of the current calendar year *(see: 2.1.6)*
-12. Log all activity including notifications, confirmations, denials, etc. in an audit trail which includes current user ID, patient ID, and relevant metadata.
-13. Provide an audit trail report of a patient's HCCs by calendar year and any approval or rejections of candidate HCCs
-14. Provide an audit trail report by doctor of all approvals and rejections of candidate HCC's by patient.
+12. Log all activity including notifications, confirmations, denials, etc. in a patient's EHR audit trail **_(NOTE: to discuss w/ team)_**
+13. Provide a filter for the patient's EHR audit trail by calendar year and HCC.
+14. Provide an audit trail report by doctor of all approvals and rejections of candidate HCC's by patient. **_(NOTE: a bit out of scope but useful if time permitting)_**
 
 ####2.2 Non-Functional Requirements
 
 1. Program should be browser agnostic though assume HTML5 compliance.
 2. Error messages should be user-friendly and contain non-cryptic messages.
 3. Program shall be capable of processing several thousand records per second on average. 
-4. Notifications of candidate HCCs for a patient should include dates of HCCs (and other relevant information) from prior calendar years.
+4. Candidate HCCs for a patient should include dates of HCCs *(and other relevant information)* from prior calendar years.
+5. Program should be written in a strongly typed language for security purposes.
+6. All user inputs should be validated for data integrity & security.
  
 ###3 Acronyms
 
