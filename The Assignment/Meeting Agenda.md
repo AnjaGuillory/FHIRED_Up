@@ -2,7 +2,7 @@
 ####February 29, 2016
 * Requirements Document approval
   * _Notes to review:_
-    * **Codes** -- Are APCD codes still needed? Spiro: For #1,  we were able to create a mapping table to convert Snomed codes into the HCC categories used in the risk adjustment process.
+    * **Codes** -- Are APCD codes still needed? **Spiro** : For #1,  we were able to create a mapping table to convert Snomed codes into the HCC categories used in the risk adjustment process.
     * **Database** -- Will we need a database (ex: MySQL or NoSQL) to persist any data outside of FHIR? **Spiro**: our lookup tables are small enough to store as python dictionaries, and the FHIR server lets us create/update records.  So we may be able to complete the project without a database. **Dan**: :  if we do need to store data it provides a free API called Datastore which is a high-performance, distributed, NoSQL database with replication between data centers (I added sample code to the skeleton to demonstrate usage of it in Python).   
     * **Authentication** -- Is this necessary for the scope of this application?  Should we at a minimum have a single hard-code username/password to access the tool since it'll be publicly available. **Dan** " Flask provides authentication so I would imagine we just use the framework; of those provided options most likely basic as you suggesting with just log on credentials. **RohanTA** : this is not a core requirement. Hard coding a default username password is fine.
     * **Past HCCs** -- How many years back should we look for candidate HCCs?
