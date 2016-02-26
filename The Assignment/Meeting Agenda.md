@@ -10,8 +10,10 @@
     * **Logging** -- Will we be able to log all activity (ex: confirmations, rejections) in a patient's EHR?
     * **Audit Trail by Doctor** -- An idea, time permitting, is to provide an audit trail of confirmations & rejections by a doctor.  Of course if we have only a single login into the system there'd effectively be just one doctor
     * **A few other nice-to-haves**:
-    ** •	The ability to compare an uploaded file containing APCD data to the FHIR data. 
-    ** •	The ability to search all patients on the FHIR server and identify those with the most missing HCCs.
+    
+        •	The ability to compare an uploaded file containing APCD data to the FHIR data. 
+
+        •	The ability to search all patients on the FHIR server and identify those with the most missing HCCs.
 
 
 
