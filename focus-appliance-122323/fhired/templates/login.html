@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+{% block title %}Login{% endblock %}
+{% block head %}
+  {{ super() }}
+  <style type="text/css">
+    .important { color: #336699; }
+  </style>
+{% endblock %}
+{% block content %}
+    <div id="login" class="row">
+      <div class="medium-6 medium-centered large-4 large-centered columns">
+        <h2>RADV</h2>
+        <form action="/login" method=post>
+          <div class="row column log-in-form">
+            <label>Username
+              <input name="username" type="text" placeholder="User Name">
+            </label>
+            <label>Password
+              <input name="password" type="password" placeholder="Password">
+            </label>
+            <input id="remember_me" name="remember_me" type="checkbox"><label for="remember_me">Remember Me</label>
+            <p><a id="loginButton" type="submit" class="button expanded">Log In</a></p>
+          </div>
+        </form>
+      </div>
+    </div>
+{% endblock %}

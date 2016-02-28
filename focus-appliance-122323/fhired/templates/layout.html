@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+  <head>
+    {% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/foundation.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>{% block title %}{% endblock %} - My Webpage</title>
+    {% endblock %}
+  </head>
+  <body>
+    <div id="nav" class="nav-collapse collapse">
+        <ul class="sub-nav menu" role="navigation" title="Filter Menu List">
+        {% if g.user.is_authenticated%}
+            <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+            <li><a href="{{ url_for('tests') }}">Tests</a></li>
+            <li><a href="{{ url_for('logout') }}">Logout</a></li>
+        {% endif %}
+        {% if not g.user.is_authenticated%}
+            <li><a href="{{ url_for('login') }}">Login</a></li>
+        {% endif %}
+        </ul>
+    </div>
+    <div id="content">{% block content %}{% endblock %}</div>
+
+    <div id="footer">
+      {% block footer %}
+      &copy; Copyright 2016 by FHIRed Up.
+      {% endblock %}
+    </div>
+   <script type="application/javascript" src="{{ url_for('static', filename='js/vendor/jquery.min.js') }}"></script>
+   <script type="application/javascript" src="{{ url_for('static', filename='js/vendor/what-input.min.js') }}"></script>
+    <script type="application/javascript" src="{{ url_for('static', filename='js/foundation.js') }}"></script>
+    <script type="application/javascript" src="{{ url_for('static', filename='js/app.js') }}"></script>
+  </body>
+</html>

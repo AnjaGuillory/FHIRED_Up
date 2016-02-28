@@ -36,7 +36,6 @@ class FHIRedUp:
                 # codes. 
                 # diagnosis_code = a tuple containing HCC, HCC description and Risk Score
                 diagnosis_code = ConvertSnowmedToHCC(Cond[0])
-                
 
                 if Enc[1] == current_year:
                     current_year_hccs.append(diagnosis_code)
@@ -75,7 +74,9 @@ class FHIRedUp:
                 if code is hcc:
                     current_year_hccs.append((code,diag))
                     break
-        return current_year_hccs    
+        return current_year_hccs
+
+
     def remove_diagnosis_to_current(self, current_year_hccs, *hccs):
         """Takes variable input HCC for the corresponding diagnoses for addition,
             and the current list of diagnoses,

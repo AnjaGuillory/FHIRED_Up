@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+{% block title %}Tests{% endblock %}
+{% block head %}
+  {{ super() }}
+  <style type="text/css">
+    .important { color: #336699; }
+  </style>
+{% endblock %}
+{% block content %}
+    <div id="dashboard" class="row">
+          <br/>
+          <br/>
+          <div class="large-4 columns">
+             <div class="callout large">
+                 <h4>Project Tests</h4>
+             </div>
+          </div>
+
+          <div class="large-8 columns">
+              <div class="callout large">
+                {% for entry in data %}
+                    <p>{{ entry }}</p>
+                {% endfor %}
+              </div>
+          </div>
+    </div>
+{% endblock %}

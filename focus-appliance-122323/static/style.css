@@ -1,0 +1,34 @@
+
+
+.sub-nav {
+  background-color: #f2f2f2;
+  padding: 0.5rem 0.5rem 0.5rem 0; }
+  .sub-nav li {
+    color: #999999;
+    font-size: 0.77778rem;
+    padding-left: 0.88889rem; }
+    .sub-nav li.active a {
+      border-radius: 3px;
+      background: #008CBA;
+      color: #fff;
+      cursor: default;
+      font-weight: normal;
+      padding: 0.16667rem 0.88889rem; }
+
+#login .log-in-form {
+  border: 1px solid #cacaca;
+  padding: 16px;
+  border-radius: 3px; }
+
+
+#footer{
+    height: 50px;
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+    line-height: 50px;
+    color: #aaa;
+    text-align: center;
+    width: 100%;
+}
+
