@@ -70,9 +70,9 @@ class FHIRedUp:
             :param missing_diagnoses:
             :param current_year_hccs:"""
         for hcc in hccs:
-            for code,diag in missing_diagnoses:
-                if code is hcc:
-                    current_year_hccs.append((code,diag))
+            for pair in missing_diagnoses:
+                if hcc == int(pair[0]):
+                    current_year_hccs.append(pair)
                     break
         return current_year_hccs
 
@@ -84,9 +84,9 @@ class FHIRedUp:
             :param hccs:
             :param current_year_hccs:"""
         for hcc in hccs:
-            for code,diag in missing_diagnoses:
-                if code is hcc:
-                    current_year_hccs.remove((code,diag))
+            for pair in current_year_hccs:
+                if hcc == int(pair[0]):
+                    current_year_hccs.remove(pair)
                     break
         return current_year_hccs
 
