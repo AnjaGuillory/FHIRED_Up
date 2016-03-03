@@ -1,3 +1,12 @@
+####March 7, 2016
+* **Team Deliverable 2**
+   * ensure all required components are included
+   * Jamie and who else will narrate
+   * revise for aesthetics 
+   * limit paragraphs and use images
+   * other?
+
+
 
 ####February 29, 2016
 * Requirements Document approval
