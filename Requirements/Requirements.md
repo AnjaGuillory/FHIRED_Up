@@ -69,5 +69,4 @@
 * HCC - Hierarchical Condition Categories 
 * ICD (9 & 10) - International Classification of Diseases (ninth & tenth revisions)
 * ICD-9-CM - International Classification of Diseases,Ninth Revision, Clinical Modification (ICD-9-CM)
-* MA APCD - Massachusetts All Payer Claims Database
 * SNOMED - Systematized Nomenclature of Medicine
