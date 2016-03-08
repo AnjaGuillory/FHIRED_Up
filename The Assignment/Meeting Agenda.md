@@ -5,6 +5,7 @@
    * revise for aesthetics 
    * limit paragraphs and use images
    * other?
+   * **From Rohan** If you do this, visualize the data as a whole first, and then maybe you could have an add-on that deals exclusively with a physician. For example, a physician might have cases of missing risk with two different patients - one in 2007 and one in 2009. Your audit trail would show a timeline of sorts visualizing these “missing risk cases” instead of just listing them.
 
 
 
