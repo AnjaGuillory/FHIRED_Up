@@ -1,6 +1,8 @@
 import json
 import urllib2
 from datetime import datetime
+from fhired import Entities
+
 
 # Basic Process Flow
 #
@@ -58,3 +60,20 @@ class FHIRQueries:
             return all_patients_conditions
         except:
             return []
+
+    def get_patient_for(self, query):
+        # TODO: make actual request
+        pt1 = Entities.Patient(1, "Test Patient 1", "1/1/2000", "Female", "Near by")
+        pt2 = Entities.Patient(1, "Test Patient 2", "1/1/2005", "Female", "Close")
+        pt3 = Entities.Patient(1, "Test Patient 3", "1/1/1988", "Male", "Far far away")
+        return list([pt1, pt2, pt3])
+
+    def get_patient_by_id(self, patient_id):
+        patients = self.get_patient_for("Query")
+        for patient in patients:
+            if str(patient.pt_id) == patient_id:
+                return patient
+
+        return None
+
+

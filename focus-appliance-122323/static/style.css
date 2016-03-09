@@ -18,8 +18,49 @@
 #login .log-in-form {
   border: 1px solid #cacaca;
   padding: 16px;
-  border-radius: 3px; }
+  border-radius: 3px;
+}
 
+.separator{
+    height: 25px;
+}
+
+.small.separator{
+    height: 10px;
+}
+
+#patient_list_container, #loading{
+    min-height: 600px;
+}
+
+.borders{
+    border: 1px solid hsla(0,0%,4%,.25);
+}
+
+.round{
+    border-radius: 10px;
+}
+
+#current_year_hcc .round{
+    margin-bottom: 10px;
+}
+
+#candidate_hcc_dashboard hr{
+    max-width: 100%;
+}
+
+#candidate_hcc_dashboard ul {
+    list-style-type: none;
+}
+
+#candidate_hcc_dashboard.row, #candidate_hcc_dashboard .row{
+    max-width: 90rem
+}
+
+#analysis, #candidate_hcc, #current_year_hcc{
+    margin: .5rem;
+    min-height: 600px;
+}
 
 #footer{
     height: 50px;

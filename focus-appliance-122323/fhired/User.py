@@ -5,6 +5,7 @@ user_database = {"aburgos": "f920cd4628136d5cef595ba8d629758b6d6e96463f64afe1407
                  "FHIRedUp" : "96f53082968e609425115b8ac6b8899f239a4c57e4a338c46c466c29bf16a817" # PjV7kGTD
                 }
 
+
 class User(UserMixin):
 
     def __init__(self, username, password):

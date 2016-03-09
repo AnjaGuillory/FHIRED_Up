@@ -66,11 +66,10 @@ def login():
 
 
 @login_required
-@app.route('/patient_history', methods=['POST'])
-def patient_history():
+@app.route('/patient_lookup', methods=['POST'])
+def patient_lookup():
     fhir_queries = FHIRQueries()
-    patients_conditions = fhir_queries.get_all_patients_conditions(request.form['pt_id'])
-    return render_template('patient_history.html', data=patients_conditions)
+    return render_template('patient_lookup.html', data=fhir_queries.get_patient_for("query"))
 
 
 @login_required
@@ -78,6 +77,17 @@ def patient_history():
 def tests():
     output = testing()
     return render_template('tests.html', data=output)
+
+
+@login_required
+@app.route('/candidate_hcc',  methods=['get'])
+def candidate_hcc():
+    fhir_queries = FHIRQueries()
+    patient_id = request.args.get('pt_id', '')
+    patient = fhir_queries.get_patient_by_id(patient_id)
+    if patient is not None:
+        return render_template('candidate_hcc.html', patient=patient)
+    return render_template('404.html'), 404
 
 
 if __name__ == '__main__':
