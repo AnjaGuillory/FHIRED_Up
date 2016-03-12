@@ -89,6 +89,12 @@ class FHIRedUp:
                     current_year_hccs.remove(pair)
                     break
         return current_year_hccs
+        
+    def add_patient_to_provider(self, patient_id):
+        """Adds a patient to the list of patients under the provider's care"""
+        patient = get_patient_by_id(patient_id)
+        patientInfo = Entities.Patient(patient_id, patient.name , patient.dob, patient.gender, patient.address, patient.listOfDig)
+        self.listOfPatients.append(patientInfo)
 
 
 
