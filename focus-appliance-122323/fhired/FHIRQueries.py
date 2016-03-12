@@ -63,10 +63,12 @@ class FHIRQueries:
 
     def get_patient_for(self, query):
         # TODO: make actual request
-        pt1 = Entities.Patient(1, "Test Patient 1", "1/1/2000", "Female", "Near by")
+        """pt1 = Entities.Patient(1, "Test Patient 1", "1/1/2000", "Female", "Near by")
         pt2 = Entities.Patient(1, "Test Patient 2", "1/1/2005", "Female", "Close")
         pt3 = Entities.Patient(1, "Test Patient 3", "1/1/1988", "Male", "Far far away")
-        return list([pt1, pt2, pt3])
+        return list([pt1, pt2, pt3])"""
+        # TODO: make actual request
+        return query.listOfPatients
 
     def get_patient_by_id(self, patient_id):
         patients = self.get_patient_for("Query")
