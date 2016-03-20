@@ -9,6 +9,7 @@
 {% block content %}
     <div id="candidate_hcc_dashboard" class="row">
         <div class="separator"></div>
+        <input id="pt_id" type="hidden" value="{{ patient.pt_id }}">
         <h4 class="text-center">Candidate HCCs</h4>
           <div class="large-12 columns">
             <div class="callout large">
@@ -18,23 +19,24 @@
                     <h5>Home / Patient</h5>
                     <br/>
                 </div>
-                <div class="row callout small round">
-                    <div class="large-3 columns">
-                        <label>Name: {{ patient.name }}</label>
-                        <label>Patient ID: {{ patient.pt_id }}</label>
+                <div class="row" style="position: relative;">
+                    <div class="callout small round" style="width: 85%; height: 90px;">
+                        <div class="large-3 columns">
+                            <label>Name: {{ patient.name }}</label>
+                            <label>Patient ID: {{ patient.pt_id }}</label>
+                        </div>
+                        <div class="large-3 columns">
+                            <label>DOB: {{ patient.dob }}</label>
+                            <label>Gender: {{ patient.gender }}</label>
+                        </div>
+                        <div class="large-3 columns">
+                            <label>Address: {{ patient.address }}</label>
+                            <label>Risk Score: Over 9000</label>
+                        </div>
                     </div>
-                    <div class="large-3 columns">
-                        <label>DOB: {{ patient.dob }}</label>
-                        <label>Gender: {{ patient.gender }}</label>
-                    </div>
-                    <div class="large-3 columns">
-                        <label>Address: {{ patient.address }}</label>
-                        <label>Risk Score: Over 9000</label>
-                    </div>
-                    <div class="large-3 columns">
-                        <img style="float: right;" width="100px" src="http://cdn.1001freedownloads.com/vector/thumb/94680/stop_light_h.png"/>
-                    </div>
+                    <div id="risk_meter"  class="columns" style="position: absolute; right: 0; top: -75px; min-width: 100px; max-width: 200px; height: 200px; margin: 0 auto"></div>
                 </div>
+
                 <div class="row">
                     <div class="callout small round">
                         <div id ="current_year_hcc" class="large-2 columns callout small round">
@@ -71,6 +73,7 @@
                                     <h6>Candidate HCCs</h6>
                                 </div>
                                 <div class="large-5 columns">
+                                    <span>Years: </span>
                                     <div id='yearSlider'></div>
                                 </div>
                                 <div class="large-4 columns">
@@ -79,10 +82,12 @@
                                         Include Rejected HCCs
                                     </label>
                                 </div>
-                                <div class="columns"></div>
                             </div>
-                            <div class="row"></div>
-
+                            <div class="row">
+                                 <div class="content large-12 columns">
+                                    <p>Loading....</p>
+                                 </div>
+                            </div>
                         </div>
                         <div id="analysis" class="callout small large-3 columns round">
                              <div class="large-4 columns">
@@ -93,7 +98,13 @@
                                         <input name=selected_hccs type="checkbox"/>
                                         Include Selected HCCs
                                     </label>
-                                </div>
+                             </div>
+                              <div class="row">
+                                 <div class="content large-12 columns">
+                                    <p>Loading....</p>
+                                 </div>
+                            </div>
+
                         </div>
                         <div style="clear:both"></div>
                     </div>

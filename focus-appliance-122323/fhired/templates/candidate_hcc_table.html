@@ -1,0 +1,24 @@
+<table id="candidate_hcc_table" class="display  dt-foundation" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Code</th>
+                <th>Name</th>
+                <th>Risk Score %</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entry in data.hccs %}
+                <tr>
+                    <td>
+                        <a data-id="{{ entry.code }}" rel="add" href="#">Add</a>&nbsp;|
+                        <a data-id="{{ entry.code }}" rel="reject" href="#">Reject</a>&nbsp;|
+                        <a data-id="{{ entry.code }}" rel="view" href="#">View</a>
+                    </td>
+                    <td>{{ entry.code }}</td>
+                    <td>{{ entry.name }}</td>
+                    <td>{{ entry.risk_score }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>

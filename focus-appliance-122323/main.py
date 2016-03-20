@@ -4,7 +4,7 @@ import jinja2
 from fhired import User
 from fhired.FHIRQueries import FHIRQueries
 from fhired.tests import testing
-from flask.ext.login import LoginManager, UserMixin, login_required, login_user , logout_user , current_user
+from flask.ext.login import LoginManager, UserMixin, login_required, login_user, logout_user, current_user
 
 app = Flask(__name__)
 app.jinja_loader = jinja2.FileSystemLoader('fhired/templates')
@@ -73,6 +73,55 @@ def patient_lookup():
 
 
 @login_required
+@app.route('/analysis_table', methods=['GET'])
+def analysis_table():
+    fhir_queries = FHIRQueries()
+    patient_id = request.args.get('pt_id', '')
+    analysis_data = fhir_queries.get_analysis_data(patient_id)
+    return render_template('analysis_table.html', data=analysis_data)
+
+
+@login_required
+@app.route('/candidate_hcc_table', methods=['GET'])
+def candidate_hcc_table():
+    fhir_queries = FHIRQueries()
+    patient_id = request.args.get('pt_id', '')
+    return render_template('candidate_hcc_table.html',
+                           data={"pt_id": patient_id, "hccs": fhir_queries.get_candidate_hcc_for(patient_id)})
+
+
+@login_required
+@app.route('/add_candidate_hcc', methods=['POST'])
+def add_candidate_hcc():
+    fhir_queries = FHIRQueries()
+    patient_id = request.args.get('pt_id', '')
+    hcc = request.args.get('hcc', '')
+    return render_template('add_candidate_hcc.html',
+                           data={"pt_id": patient_id, "hcc": fhir_queries.add_hcc_candidate_hcc_for(patient_id, hcc)})
+
+
+@login_required
+@app.route('/reject_candidate_hcc', methods=['POST'])
+def reject_candidate_hcc():
+    fhir_queries = FHIRQueries()
+    patient_id = request.args.get('pt_id', '')
+    hcc = request.args.get('hcc', '')
+    return render_template('reject_candidate_hcc.html',
+                           data={"pt_id": patient_id, "hcc": fhir_queries.reject_hcc_candidate_hcc_for(patient_id, hcc)})
+
+
+@login_required
+@app.route('/view_candidate_hcc', methods=['POST'])
+def view_candidate_hcc():
+    fhir_queries = FHIRQueries()
+    patient_id = request.args.get('pt_id', '')
+    hcc = request.args.get('hcc', '')
+    return render_template('view_candidate_hcc.html',
+                           data={"pt_id": patient_id, "hcc": fhir_queries.view_hcc_candidate_hcc_for(patient_id, hcc)})
+
+
+
+@login_required
 @app.route('/tests')
 def tests():
     output = testing()
@@ -80,7 +129,7 @@ def tests():
 
 
 @login_required
-@app.route('/candidate_hcc',  methods=['get'])
+@app.route('/candidate_hcc', methods=['get'])
 def candidate_hcc():
     fhir_queries = FHIRQueries()
     patient_id = request.args.get('pt_id', '')

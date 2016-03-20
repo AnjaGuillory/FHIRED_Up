@@ -59,7 +59,22 @@
 
 #analysis, #candidate_hcc, #current_year_hcc{
     margin: .5rem;
+    padding-top: 10px;
     min-height: 600px;
+}
+
+#yearSlider{
+    margin-top: 5px;
+    width: 200px;
+    float: right;
+}
+
+#analysis{
+    float:right;
+}
+
+#candidate_hcc{
+    width: 54%;
 }
 
 #footer{
@@ -72,4 +87,5 @@
     text-align: center;
     width: 100%;
 }
+
 

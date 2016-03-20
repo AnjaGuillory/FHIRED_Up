@@ -47,9 +47,7 @@ class FHIRQueries:
             list of that patient's conditions.
 
             The output of this query is a list:
-            [EncounterID, EncounterServiceYear, [list of [ConditionCode, CoinditionName, ConditionCodingSystem]]]
-
-
+            [EncounterID, EncounterServiceYear, [list of [ConditionCode, ConditionName, ConditionCodingSystem]]]
             """
         try:
             all_patients_conditions = []
@@ -63,12 +61,11 @@ class FHIRQueries:
 
     def get_patient_for(self, query):
         # TODO: make actual request
-        """pt1 = Entities.Patient(1, "Test Patient 1", "1/1/2000", "Female", "Near by")
-        pt2 = Entities.Patient(1, "Test Patient 2", "1/1/2005", "Female", "Close")
-        pt3 = Entities.Patient(1, "Test Patient 3", "1/1/1988", "Male", "Far far away")
-        return list([pt1, pt2, pt3])"""
+        pt1 = Entities.Patient(1, "Test Patient 1", "1/1/2000", "Female", "Near by", [])
+        pt2 = Entities.Patient(1, "Test Patient 2", "1/1/2005", "Female", "Close", [])
+        pt3 = Entities.Patient(1, "Test Patient 3", "1/1/1988", "Male", "Far far away", [])
         # TODO: make actual request
-        return query.listOfPatients
+        return list([pt1, pt2, pt3])
 
     def get_patient_by_id(self, patient_id):
         patients = self.get_patient_for("Query")
@@ -77,5 +74,32 @@ class FHIRQueries:
                 return patient
 
         return None
+
+    def get_analysis_data(self, patient_id):
+        # TODO: make actual request
+        data = {'current_risk_score' : 20, 'candidate_risk_score' : 30 }
+         # TODO: make actual request
+        return data
+
+    def get_candidate_hcc_for(self, patient_id):
+        # TODO: make actual request
+        chcc1 = Entities.CandidateHcc("123", "Name 1", 20)
+        chcc2 = Entities.CandidateHcc("456", "Name 2", 20)
+        chcc3 = Entities.CandidateHcc("78", "Name 3", 20)
+        chcc4 = Entities.CandidateHcc("901", "Name 4", 20)
+        # TODO: make actual request
+        return list([chcc1, chcc2, chcc3, chcc4])
+
+    def add_hcc_candidate_hcc_for(self, patient_id, hcc):
+        # TODO
+        pass
+
+    def reject_hcc_candidate_hcc_for(self, patient_id, hcc):
+        # TODO
+        pass
+
+    def view_hcc_candidate_hcc_for(self, patient_id, hcc):
+        # TODO
+        pass
 
 
