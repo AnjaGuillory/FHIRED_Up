@@ -14,6 +14,7 @@ from fhired import Entities
 class FHIRQueries:
     ENCOUNTERS_BY_PATIENT = 'http://polaris.i3l.gatech.edu:8080/gt-fhir-webapp/base/Encounter?patient='
     CONDITION_BY_ENCOUNTER = 'http://polaris.i3l.gatech.edu:8080/gt-fhir-webapp/base/Condition?encounter='
+    PATIENT_ID_BY_NAME = 'http://polaris.i3l.gatech.edu:8080/gt-fhir-webapp/base/Patient?name='
 
     # These are the get queries I use to access the GaTech FHIR server
     def __init__(self):
@@ -59,6 +60,23 @@ class FHIRQueries:
         except:
             return []
 
+            
+            
+            
+            
+            
+    def get_patient_id_by_name(self, patient_name):
+        '''submits a name to the FHIR server andf gets all the patient IDs that have that name'''
+        patient_ID_list = []
+        patient_ID_data = json.load(urllib2.urlopen(self.PATIENT_ID_BY_NAME + str(patient_name)))
+        for patient in patient_ID_list['entry']:
+            patient_ID_list.append(patient['resource']['id'])
+        return patient_ID_list                
+            
+            
+            
+            
+            
     def get_patient_for(self, query):
         # TODO: make actual request
         pt1 = Entities.Patient(1, "Test Patient 1", "1/1/2000", "Female", "Near by", [])
