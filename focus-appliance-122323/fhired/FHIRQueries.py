@@ -97,7 +97,7 @@ class FHIRQueries:
         patient_list = []
         
         # add "_count" attribute if not included to restrict number of matches returned.
-        if '_count' in query: query['_count'] = count
+        if not '_count' in query: query['_count'] = count
 
         patient_ID_data = json.load(urllib2.urlopen(self.PATIENT_RESOURCE + urllib.urlencode(query)))
         
