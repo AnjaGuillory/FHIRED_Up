@@ -29,7 +29,9 @@ class Patient:
         if 'gender' in resource: patient.gender = resource.get('gender')
 
         # format the name           
-        patient.name = ' '.join(resource['name'][0].get('given')) + ' ' + ' '.join(resource['name'][0].get('family'))
+        if 'name' in resource and len(resource['name']) > 0: 
+            if 'given' in resource['name'][0]: patient.name = ' '.join(resource['name'][0].get('given')) 
+            if 'family' in resource['name'][0]: patient.name += ' ' + ' '.join(resource['name'][0].get('family'))
 
         # format address (use "home" address only)
         address = ''
