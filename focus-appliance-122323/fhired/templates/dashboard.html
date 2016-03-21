@@ -5,8 +5,22 @@
   <style type="text/css">
     .important { color: #336699; }
   </style>
-{% endblock %}
-{% block content %}
+
+    {% endblock %}
+    {% block content %}
+<script type="text/javascript">
+
+    $(document).keypress(function (event) {
+        var keycode = (event.keyCode ? event.keyCode : event.which);
+        if (keycode == '13') {
+            $("#lookUp").click();
+        }
+    });
+
+    $(document).ready(function () {
+        $("#pt_id").focus();
+    });
+</script>
     <div id="dashboard" class="row">
         <div class="separator"></div>
         <h4 class="text-center">Patient Lookup</h4>
@@ -21,6 +35,8 @@
                 </div>
                 <div class="large-4 columns">
                     <input id="pt_id" type="text" placeholder="Enter Patient ID or Name" />
+
+                    <input type="submit" style="display:none; visibility:hidden;" />
                 </div>
                 <div class="large-2 columns">
                     <a id="lookUp" type="submit" class="button expanded">Look Up</a>
