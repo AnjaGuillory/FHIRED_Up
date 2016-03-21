@@ -1,5 +1,6 @@
-import json
+﻿import json
 import urllib2
+import urllib
 from datetime import datetime
 from fhired import Entities
 
@@ -15,6 +16,7 @@ class FHIRQueries:
     ENCOUNTERS_BY_PATIENT = 'http://polaris.i3l.gatech.edu:8080/gt-fhir-webapp/base/Encounter?patient='
     CONDITION_BY_ENCOUNTER = 'http://polaris.i3l.gatech.edu:8080/gt-fhir-webapp/base/Condition?encounter='
     PATIENT_ID_BY_NAME = 'http://polaris.i3l.gatech.edu:8080/gt-fhir-webapp/base/Patient?name='
+    PATIENT_RESOURCE = 'http://polaris.i3l.gatech.edu:8080/gt-fhir-webapp/base/Patient?'
 
     # These are the get queries I use to access the GaTech FHIR server
     def __init__(self):
@@ -69,24 +71,51 @@ class FHIRQueries:
         '''submits a name to the FHIR server andf gets all the patient IDs that have that name'''
         patient_ID_list = []
         patient_ID_data = json.load(urllib2.urlopen(self.PATIENT_ID_BY_NAME + str(patient_name)))
-        for patient in patient_ID_list['entry']:
-            patient_ID_list.append(patient['resource']['id'])
+        if int(patient_ID_data['total']):
+            for patient in patient_ID_list['entry']:
+                patient_ID_list.append(patient['resource']['id'])
         return patient_ID_list                
             
             
             
             
             
-    def get_patient_for(self, query):
-        # TODO: make actual request
-        pt1 = Entities.Patient(1, "Test Patient 1", "1/1/2000", "Female", "Near by", [])
-        pt2 = Entities.Patient(1, "Test Patient 2", "1/1/2005", "Female", "Close", [])
-        pt3 = Entities.Patient(1, "Test Patient 3", "1/1/1988", "Male", "Far far away", [])
-        # TODO: make actual request
-        return list([pt1, pt2, pt3])
+    def get_patient_for(self, query, count=10):
+        """Returns a list of matching patients give the provided query.
+
+        Args:
+            query (dictionary):  Valid keys: _id, name, given, birthdate, gender,  (for details: http://polaris.i3l.gatech.edu:8080/gt-fhir-webapp/resource?serverId=gatechrealease&resource=Patient)
+            count (int): Number matching patient records to retrieve.  Default is 10.  (note: the "_count" paremeter will be added to "query" dictionary.)
+
+        Returns:
+            list[Entities.Patient]:  List of matching patient records.
+        """
+
+        # TODO: Add support for paging
+        # TODO: need to return totalMatches
+        
+        patient_list = []
+        
+        # add "_count" attribute if not included to restrict number of matches returned.
+        if '_count' in query: query['_count'] = count
+
+        patient_ID_data = json.load(urllib2.urlopen(self.PATIENT_RESOURCE + urllib.urlencode(query)))
+        
+        # get total number of matching patients.
+        totalMatches = int(patient_ID_data['total'])
+
+        if totalMatches > 0:
+            for patient in patient_ID_data['entry']:
+                patient_list.append(Entities.Patient.initFromFHIRPatientResource(patient['resource']))
+        
+        return patient_list #, totalMatches
 
     def get_patient_by_id(self, patient_id):
-        patients = self.get_patient_for("Query")
+
+        # build list of querystring params passed to the FHIR server.
+        query = {'_id': patient_id}
+
+        patients = self.get_patient_for(query)
         for patient in patients:
             if str(patient.pt_id) == patient_id:
                 return patient
