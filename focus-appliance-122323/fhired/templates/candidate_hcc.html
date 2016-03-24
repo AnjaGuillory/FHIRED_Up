@@ -1,4 +1,5 @@
 {% extends "layout.html" %}
+{% import 'utils.html' as utils %}
 {% block title %}Dashboard{% endblock %}
 {% block head %}
   {{ super() }}
@@ -20,21 +21,36 @@
                     <br/>
                 </div>
                 <div class="row" style="position: relative;">
-                    <div class="callout small round" style="width: 85%; height: 90px;">
+                    <div class="pt_info callout small round" style="width: 85%; height: 90px;">
                         <div class="large-3 columns">
-                            <label>Name: {{ patient.name }}</label>
-                            <label>Patient ID: {{ patient.pt_id }}</label>
+                            <label>Name: <span>{{ patient.name }}</span></label>
+                            <label>Patient ID: <span>{{ patient.pt_id }}</span></label>
                         </div>
                         <div class="large-3 columns">
-                            <label>DOB: {{ patient.dob }}</label>
-                            <label>Gender: {{ patient.gender }}</label>
+                            <label>DOB: <span>{{ patient.dob }}</span></label>
+                            <label>Gender: <span>{{ patient.gender }}</span></label>
                         </div>
                         <div class="large-3 columns">
-                            <label>Address: {{ patient.address }}</label>
-                            <label>Risk Score: Over 9000</label>
+                            <div class="row">
+                                <div class="large-5 columns">
+                                    <label>Address:</label>
+                                </div>
+                                <div class="large-7 columns">
+                                    <label><span>{{ utils.address(patient.address) }}</span></label>
+                                </div>
+                            </div>
+                             <div class="row">
+                                <div class="large-5 columns">
+                                     <label>Risk Score:</label>
+                                </div>
+                                <div class="large-7 columns">
+                                    <label><span>9000</span></label>
+                                </div>
+                            </div>
+                            <br/>
                         </div>
                     </div>
-                    <div id="risk_meter"  class="columns" style="position: absolute; right: 0; top: -75px; min-width: 100px; max-width: 200px; height: 200px; margin: 0 auto"></div>
+                    <div id="risk_meter"  class="columns" rel="{{ risk_meter }}" style="position: absolute; right: 0; top: -75px; min-width: 100px; max-width: 200px; height: 200px; margin: 0 auto"></div>
                 </div>
 
                 <div class="row">

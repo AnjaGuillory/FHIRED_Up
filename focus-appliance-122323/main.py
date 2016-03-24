@@ -1,9 +1,11 @@
 ﻿from flask import Flask, Response, session, request, flash, url_for, redirect, render_template, abort, g
 import jinja2
-
 from fhired import User
 from fhired.FHIRQueries import FHIRQueries
+from fhired.FHIRed_Up import FHIRedUp
 from fhired.tests import testing
+import fhired.utils as utils
+
 from flask.ext.login import LoginManager, UserMixin, login_required, login_user, logout_user, current_user
 
 app = Flask(__name__)
@@ -81,10 +83,16 @@ def patient_lookup():
 @login_required
 @app.route('/analysis_table', methods=['GET'])
 def analysis_table():
-    fhir_queries = FHIRQueries()
+    fhir_up = FHIRedUp()
     patient_id = request.args.get('pt_id', '')
-    analysis_data = fhir_queries.get_analysis_data(patient_id)
-    return render_template('analysis_table.html', data=analysis_data)
+    bar_categories, bar_values = utils.get_categories_for_risks(fhir_up.risks_scores_list(patient_id))
+    data = {
+            'current_risk_score' : fhir_up.get_current_risk_score_for_pt(patient_id),
+            'candidate_risk_score' : fhir_up.get_candidate_risk_score_for_pt(patient_id),
+            'pie_chart_data' : fhir_up.risks_scores_distribution(patient_id),
+            'bar_chart_data' : { "categories" : bar_categories , "values" : bar_values}
+    }
+    return render_template('analysis_table.html', data=data)
 
 
 @login_required
@@ -126,7 +134,6 @@ def view_candidate_hcc():
                            data={"pt_id": patient_id, "hcc": fhir_queries.view_hcc_candidate_hcc_for(patient_id, hcc)})
 
 
-
 @login_required
 @app.route('/tests')
 def tests():
@@ -138,10 +145,13 @@ def tests():
 @app.route('/candidate_hcc', methods=['get'])
 def candidate_hcc():
     fhir_queries = FHIRQueries()
+    fhir_up = FHIRedUp()
     patient_id = request.args.get('pt_id', '')
     patient = fhir_queries.get_patient_by_id(patient_id)
+    risk_value = fhir_up.get_current_risk_score_for_pt(patient_id)
+
     if patient is not None:
-        return render_template('candidate_hcc.html', patient=patient)
+        return render_template('candidate_hcc.html', patient=patient, risk_meter=risk_value)
     return render_template('404.html'), 404
 
 

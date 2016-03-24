@@ -1,13 +1,12 @@
 from LookupTables import *
 from FHIRQueries import *
+from Entities import *
 from Snowmed_Mapping import ConvertSnowmedToHCC
 
 
 class FHIRedUp:
-
     def __init__(self):
         self.queries = FHIRQueries()
-
 
     def get_hccs_by_time_period(self, patient_id, current_year):
         """
@@ -60,7 +59,8 @@ class FHIRedUp:
             returns all of that patients missing diagnoses
             :param current_year:
             :param patient_id: """
-        return self.find_missing_diagnoses(self.get_hccs_by_time_period(patient_id, current_year)[0], self.get_hccs_by_time_period(patient_id, current_year)[1])
+        return self.find_missing_diagnoses(self.get_hccs_by_time_period(patient_id, current_year)[0],
+                                           self.get_hccs_by_time_period(patient_id, current_year)[1])
 
     def add_diagnosis_to_current(self, missing_diagnoses, current_year_hccs, *hccs):
         """Takes variable input HCC for the corresponding diagnoses for addition,
@@ -76,7 +76,6 @@ class FHIRedUp:
                     break
         return current_year_hccs
 
-
     def remove_diagnosis_to_current(self, current_year_hccs, *hccs):
         """Takes variable input HCC for the corresponding diagnoses for addition,
             and the current list of diagnoses,
@@ -89,16 +88,42 @@ class FHIRedUp:
                     current_year_hccs.remove(pair)
                     break
         return current_year_hccs
-        
+
     def add_patient_to_provider(self, patient_id):
         """Adds a patient to the list of patients under the provider's care"""
         patient = get_patient_by_id(patient_id)
-        patientInfo = Entities.Patient(patient_id, patient.name , patient.dob, patient.gender, patient.address, patient.listOfDig)
+        patientInfo = Entities.Patient(patient_id, patient.name, patient.dob, patient.gender, patient.address,
+                                       patient.listOfDig)
         self.listOfPatients.append(patientInfo)
 
+    def get_current_risk_score_for_pt(self, patient_id):
+        "TODO get risk core use in gaugue"
+        risk_value = 30
+        return risk_value
 
 
+    def get_candidate_risk_score_for_pt(self, patient_id):
+        risk_value = 20
+        return risk_value
 
+    def risks_scores_distribution(self, patient_id):
+        #all the entries must sum to 100
+        entry_1 = Entities.RiskDistribution('Value 1', 56.33).for_chart()
+        entry_2 = Entities.RiskDistribution('Value 2', 24.03).for_chart()
+        entry_3 = Entities.RiskDistribution('Value 3', 10.38).for_chart()
+        entry_4 = Entities.RiskDistribution('Value 4', 4.77).for_chart()
 
+        return list([entry_1, entry_2, entry_3, entry_4])
 
+    def risks_scores_list(self, patient_id):
+        #all the entries does not need must sum to 100
+        entry_1 = Entities.RiskDistribution('Value 1', 56.33)
+        entry_2 = Entities.RiskDistribution('Value 2', 24.03)
+        entry_3 = Entities.RiskDistribution('Value 3', 10.38)
+        entry_4 = Entities.RiskDistribution('Value 4', 4.37)
+        entry_5 = Entities.RiskDistribution('Value 5', 3.27)
+        entry_6 = Entities.RiskDistribution('Value 6', 6.77)
+        entry_7 = Entities.RiskDistribution('Value 7', 7.47)
+
+        return list([entry_1, entry_2, entry_3, entry_4, entry_5, entry_6, entry_7])
 

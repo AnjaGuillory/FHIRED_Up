@@ -77,6 +77,16 @@
     width: 54%;
 }
 
+#candidate_hcc_dashboard .pt_info label{
+    font-weight: bold;
+    font-size: .950rem;
+}
+
+#candidate_hcc_dashboard .pt_info label span{
+    font-weight: normal;
+    font-size: .875rem;
+}
+
 #footer{
     height: 50px;
     position: fixed;

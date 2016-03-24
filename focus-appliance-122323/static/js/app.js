@@ -22,7 +22,10 @@ $(document).ready(function(){
         if(analysis.length > 0){
             $.get("/analysis_table",{ pt_id : pt_id.val() }, function(response){
                 analysis.find("div.content").html(response);
-                setUpCharts();
+                var table = $('#analysis_table');
+
+                setUpPieChart(table.find('div.piechart'), pie_chart_data);
+                setUpBarChart(table.find('div.barchart'), bar_chart_data);
             });
         }
     }
@@ -93,13 +96,13 @@ $(document).ready(function(){
     setUpYearSlider();
     setUpCandidateHcc();
     setUpAnalysis();
-    setUpRiskMeter();
+    setUpRiskMeter("#risk_meter");
 });
 
 
 
-function setUpCharts(){
-    $('#analysis_table').find('div.piechart').highcharts({
+function setUpPieChart(container, data){
+    container.highcharts({
         exporting: { enabled: false },
         chart: {
             plotBackgroundColor: null,
@@ -126,25 +129,13 @@ function setUpCharts(){
         series: [{
             name: 'Brands',
             colorByPoint: true,
-            data: [{
-                name: 'Value 1',
-                y: 56.33
-            }, {
-                name: 'Value 2',
-                y: 24.03,
-                sliced: true,
-                selected: true
-            }, {
-                name: 'Value 3',
-                y: 10.38
-            }, {
-                name: 'Value 4',
-                y: 4.77
-            }]
+            data: data
         }]
     });
+}
 
-     $('#analysis_table').find('div.barchart').highcharts({
+function setUpBarChart(container, data){
+     container .highcharts({
         exporting: { enabled: false },
         chart: {
             type: 'column'
@@ -153,20 +144,7 @@ function setUpCharts(){
             text: ''
         },
         xAxis: {
-            categories: [
-                'Jan',
-                'Feb',
-                'Mar',
-                'Apr',
-                'May',
-                'Jun',
-                'Jul',
-                'Aug',
-                'Sep',
-                'Oct',
-                'Nov',
-                'Dec'
-            ],
+            categories: data.categories,
             crosshair: true
         },
         yAxis: {
@@ -188,16 +166,14 @@ function setUpCharts(){
         },
         series: [{
             name: 'Risk',
-            data: [49.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4]
-
+            data: data.values
         }]
     });
 
-
 }
 
-function setUpRiskMeter(){
-     $('#risk_meter').highcharts({
+function setUpRiskMeter(selector){
+     $(selector).highcharts({
 
         chart: {
             type: 'gauge',
@@ -284,29 +260,12 @@ function setUpRiskMeter(){
 
         series: [{
             name: 'Risk',
-            data: [90],
+            data: [$(selector).attr("rel")],
             tooltip: {
                 valueSuffix: ' %'
             }
         }]
-
     },
-    // Add some life
-    function (chart) {
-        if (!chart.renderer.forExport) {
-            setInterval(function () {
-                var point = chart.series[0].points[0],
-                    newVal,
-                    inc = Math.round((Math.random() - 0.5) * 20);
 
-                newVal = point.y + inc;
-                if (newVal < 0 || newVal > 200) {
-                    newVal = point.y - inc;
-                }
-
-                point.update(newVal);
-
-            }, 3000);
-        }
-    });
+    function (chart) {});
 }

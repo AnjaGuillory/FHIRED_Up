@@ -10,6 +10,10 @@
 </table>
 
 <div id="analysis_table">
+    <script type="application/javascript">
+        var pie_chart_data = JSON.parse('{{ data.pie_chart_data|tojson|safe }}');
+        var bar_chart_data = JSON.parse('{{ data.bar_chart_data|tojson|safe }}');
+    </script>
     <div class="barchart"></div>
     <div class="piechart"></div>
 </div>

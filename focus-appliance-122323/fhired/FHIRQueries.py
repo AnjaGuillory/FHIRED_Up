@@ -62,11 +62,6 @@ class FHIRQueries:
         except:
             return []
 
-            
-            
-            
-            
-            
     def get_patient_id_by_name(self, patient_name):
         '''submits a name to the FHIR server andf gets all the patient IDs that have that name'''
         patient_ID_list = []
@@ -75,10 +70,6 @@ class FHIRQueries:
             for patient in patient_ID_list['entry']:
                 patient_ID_list.append(patient['resource']['id'])
         return patient_ID_list                
-            
-            
-            
-            
             
     def get_patient_for(self, query, count=10):
         """Returns a list of matching patients give the provided query.
@@ -106,7 +97,7 @@ class FHIRQueries:
 
         if totalMatches > 0:
             for patient in patient_ID_data['entry']:
-                patient_list.append(Entities.Patient.initFromFHIRPatientResource(patient['resource']))
+                patient_list.append(Entities.Patient.init_from_fhir_patient_resource(patient['resource']))
         
         return patient_list #, totalMatches
 
@@ -122,11 +113,6 @@ class FHIRQueries:
 
         return None
 
-    def get_analysis_data(self, patient_id):
-        # TODO: make actual request
-        data = {'current_risk_score' : 20, 'candidate_risk_score' : 30 }
-         # TODO: make actual request
-        return data
 
     def get_candidate_hcc_for(self, patient_id):
         # TODO: make actual request

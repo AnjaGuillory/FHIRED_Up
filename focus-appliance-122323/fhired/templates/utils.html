@@ -1,0 +1,17 @@
+{%- macro address(values) -%}
+     {% if 'line' in values %}
+        {% for line in values["line"] %}
+            {{ line }}
+        {% endfor %}
+    {% endif %}
+    <br/>
+    {% if 'city' in values %}
+        {{  values["city"] }},
+    {% endif %}
+    {% if 'state' in values %}
+        {{  values["state"] }},
+    {% endif %}
+    {% if 'postalCode' in values %}
+        {{  values["postalCode"] }}
+    {% endif %}
+{%- endmacro %}

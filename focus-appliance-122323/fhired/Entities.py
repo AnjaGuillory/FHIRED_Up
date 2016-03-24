@@ -1,20 +1,17 @@
 ﻿
 class Patient:
 
-
-
-    def __init__(self, pt_id, name, dob, gender, address, listOfDiag):
+    def __init__(self, pt_id, name, dob, gender, address, list_of_diag):
         self.pt_id = pt_id
         self.name = name
         self.dob = dob
         self.gender = gender
         self.address = address
-        self.listOfDiag = listOfDiag
+        self.list_of_diag = list_of_diag
     
 
-
     @staticmethod
-    def initFromFHIRPatientResource (resource):
+    def init_from_fhir_patient_resource(resource):
         """Initialize a patient object from a FHIR Patient Resource record.
         
         Args:
@@ -34,26 +31,26 @@ class Patient:
             if 'family' in resource['name'][0]: patient.name += ' ' + ' '.join(resource['name'][0].get('family'))
 
         # format address (use "home" address only)
-        address = ''
+        address = {}
         if 'address' in resource:
             for a in resource['address']:
                 if a.get('use') == 'home':
-                    #TODO: Line breaks <br /> may need to be replaced with a better newline indicator
-                    if 'line' in a: address = ' '.join(a.get('line')) + '<br />'
-                    if 'city' in a: address += a.get('city') + ', '                  
-                    if 'state' in a: address += a.get('state') + ' '                
-                    if 'postalCode' in a: address += a.get('postalCode')
+                    if 'line' in a: address['line'] = a.get('line')
+                    if 'city' in a: address['city'] = a.get('city')
+                    if 'state' in a: address['state'] = a.get('state')
+                    if 'postalCode' in a: address['postalCode'] = a.get('postalCode')
 
                     break
-        patient.address = address;
+        patient.address = address
 
         return patient
-                   
+
+
 class Provider:
-    def __init__(self, prov_id, name, listOfPatients):
+    def __init__(self, prov_id, name, list_of_patients):
         self.prov_id = prov_id
         self.name = name
-        self.listOfPatients = listOfPatients
+        self.listOfPatients = list_of_patients
 
 
 class CandidateHcc:
@@ -61,3 +58,12 @@ class CandidateHcc:
         self.code = code
         self.name = name
         self.risk_score = risk_score
+
+
+class RiskDistribution:
+    def __init__(self, name, risk_score):
+        self.name = name
+        self.risk_score = risk_score
+
+    def for_chart(self):
+        return {"name" : self.name, "y" : self.risk_score }

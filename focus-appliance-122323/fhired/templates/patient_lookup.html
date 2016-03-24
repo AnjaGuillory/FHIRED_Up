@@ -1,3 +1,4 @@
+{% import 'utils.html' as utils %}
 <table id="patient_list" class="display  dt-foundation" cellspacing="0" width="100%">
         <thead>
             <tr>
@@ -22,12 +23,14 @@
         <tbody>
             {% for entry in data %}
                 <tr>
-                    <td><a href="/candidate_hcc?pt_id={{ entry.pt_id }}">View</td>
+                    <td><a href="/candidate_hcc?pt_id={{ entry.pt_id }}">View</a></td>
                     <td>{{ entry.pt_id }}</td>
                     <td>{{ entry.name }}</td>
                     <td>{{ entry.dob }}</td>
                     <td>{{ entry.gender }}</td>
-                    <td>{{ entry.address }}</td>
+                    <td>
+                        {{ utils.address(entry.address) }}
+                    </td>
                 </tr>
             {% endfor %}
         </tbody>
