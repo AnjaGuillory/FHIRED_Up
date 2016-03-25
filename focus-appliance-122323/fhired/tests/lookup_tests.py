@@ -3,7 +3,7 @@ import unittest
 from fhired.LookupTables import LookupTables
 
 
-class UnitTests(unittest.TestCase):
+class LookupTests(unittest.TestCase):
     def setUp(self):
         self.tables = LookupTables()
 

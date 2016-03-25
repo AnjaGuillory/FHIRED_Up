@@ -3,7 +3,7 @@ import jinja2
 from fhired import User
 from fhired.FHIRQueries import FHIRQueries
 from fhired.FHIRed_Up import FHIRedUp
-from fhired.tests import testing
+from fhired.test import testing
 import fhired.utils as utils
 
 from flask.ext.login import LoginManager, UserMixin, login_required, login_user, logout_user, current_user
