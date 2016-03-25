@@ -1,8 +1,8 @@
 import unittest
 
-from fhired.tests.entity_tests import EntityTests
-from fhired.tests.lookup_tests import LookupTests
-from fhired.tests.query_tests import QueryTests
+from lookup_tests import LookupTests
+from query_tests import QueryTests
+from entity_tests import EntityTests
 
 tests = [unittest.TestLoader().loadTestsFromTestCase(LookupTests),
          unittest.TestLoader().loadTestsFromTestCase(QueryTests),
