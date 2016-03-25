@@ -52,12 +52,15 @@ class FHIRQueries:
             The output of this query is a list:
             [EncounterID, EncounterServiceYear, [list of [ConditionCode, ConditionName, ConditionCodingSystem]]]
             """
-        all_patients_conditions = []
-        encounters = self.get_encounter_list(patient_id)
-        for enc in encounters:
-            x = self.get_condition_list(enc[0])
-            all_patients_conditions.append((enc[0], enc[1], x))
-        return all_patients_conditions
+        try:
+            all_patients_conditions = []
+            encounters = self.get_encounter_list(patient_id)
+            for enc in encounters:
+                x = self.get_condition_list(enc[0])
+                all_patients_conditions.append((enc[0], enc[1], x))
+            return all_patients_conditions
+        except:
+            return []
 
     def get_patient_id_by_name(self, patient_name):
         '''submits a name to the FHIR server andf gets all the patient IDs that have that name'''
