@@ -1,8 +1,10 @@
 ####March 28, 2016
-* How difficult would it be to implement RBAC
-    * Roles for doctors, nurses, coders, and PAs - main difference being only doctors can confirm or deny
+* Implement RBAC in last phases of project
+    * Roles for system admins, doctors, nurses, coders, and PAs - main difference being only doctors can confirm or deny. admins can adjust and deny but shouldn't
     * would need dummy users ?
-    * would TAs/Professor accept saying a real world implementation would have it rather than our class project having it.
+* Update status on items in issue list - this will be the outstanding items for the 3rd deliverable.
+* Team Deliverable 3: Augusto/Anja/Dan presenting?
+
 
 
 
