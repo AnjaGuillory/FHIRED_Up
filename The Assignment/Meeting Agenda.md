@@ -3,7 +3,7 @@
     * Roles for system admins, doctors, nurses, coders, and PAs - main difference being only doctors can confirm or deny. admins can adjust and deny but shouldn't
     * would need dummy users ?
 * Update status on items in issue list - this will be the outstanding items for the 3rd deliverable.
-* Team Deliverable 3: Augusto/Anja/Dan presenting?
+* Team Deliverable 3: Anja and Augusto/Dan presenting?
 
 
 
