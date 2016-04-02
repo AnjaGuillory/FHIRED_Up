@@ -85,12 +85,19 @@ def patient_lookup():
 def analysis_table():
     fhir_up = FHIRedUp()
     patient_id = request.args.get('pt_id', '')
-    bar_categories, bar_values = utils.get_categories_for_risks(fhir_up.risks_scores_list(patient_id))
+    include_selected = request.args.get('include_selected', '') == "true"
+    score_lists = fhir_up.risks_scores_list(patient_id, include_selected)
+
+    score_distribution = fhir_up.risks_scores_distribution(patient_id, include_selected)
+    current_risk_score = fhir_up.get_current_risk_score_for_pt(patient_id, include_selected)
+    candidate_risk_score = fhir_up.get_candidate_risk_score_for_pt(patient_id, include_selected)
+
+    bar_categories, bar_values = utils.get_categories_for_risks(score_lists)
     data = {
-            'current_risk_score' : fhir_up.get_current_risk_score_for_pt(patient_id),
-            'candidate_risk_score' : fhir_up.get_candidate_risk_score_for_pt(patient_id),
-            'pie_chart_data' : fhir_up.risks_scores_distribution(patient_id),
-            'bar_chart_data' : { "categories" : bar_categories , "values" : bar_values}
+            'current_risk_score': current_risk_score,
+            'candidate_risk_score': candidate_risk_score,
+            'pie_chart_data': score_distribution,
+            'bar_chart_data': {"categories": bar_categories, "values": bar_values}
     }
     return render_template('analysis_table.html', data=data)
 
@@ -105,6 +112,7 @@ def candidate_hcc_table():
     hcss = fhir_queries.get_candidate_hccs_for(patient_id, years, include_rejected)
     return render_template('candidate_hcc_table.html', data={"pt_id": patient_id, "hccs": hcss})
 
+
 @login_required
 @app.route('/current_hcc_table', methods=['GET'])
 def current_hcc_table():
@@ -112,7 +120,6 @@ def current_hcc_table():
     patient_id = request.args.get('pt_id', '')
     hcss = fhir_queries.get_current_hccs_for(patient_id)
     return render_template('current_hcc_table.html', data={"pt_id": patient_id, "hccs": hcss})
-
 
 
 @login_required
@@ -168,7 +175,8 @@ def candidate_hcc():
     fhir_up = FHIRedUp()
     patient_id = request.args.get('pt_id', '')
     patient = fhir_queries.get_patient_by_id(patient_id)
-    risk_value = fhir_up.get_current_risk_score_for_pt(patient_id)
+    include_selected = False # TODO Get from persistence
+    risk_value = fhir_up.get_current_risk_score_for_pt(patient_id, include_selected)
 
     if patient is not None:
         return render_template('candidate_hcc.html', patient=patient, risk_meter=risk_value)

@@ -16,34 +16,33 @@ $(document).ready(function(){
             slide : function( event, ui ) {
                 var year_text = ui.value > 1 ? ui.value+" years" : ui.value+" year";
                 $( "span#years-value" ).html(year_text);
-                loadCandidateHcc(ui.value);
+                loadCandidateHcc(ui.value, includeRejectedHcc());
             }
         });
     }
 
     function setUpAnalysis(){
-        var analysis = $("#analysis");
-        var pt_id = $("#pt_id");
-        if(analysis.length > 0){
-            $.get("/analysis_table",{ pt_id : pt_id.val() }, function(response){
-                analysis.find("div.content").html(response);
-                var table = $('#analysis_table');
-
-                setUpPieChart(table.find('div.piechart'), pie_chart_data);
-                setUpBarChart(table.find('div.barchart'), bar_chart_data);
-            });
+        if($("#analysis").length > 0){
+            loadAnalysis(includeSelectedHcc());
         }
     }
 
-    function loadAnalysis(){
-
+    function loadAnalysis(include_selected){
+        $.get("/analysis_table",{ pt_id : $("#pt_id").val(), include_selected : include_selected }, function(response){
+                $("#analysis").find("div.content").html(response);
+                var table = $('#analysis_table');
+                setUpPieChart(table.find('div.piechart'), pie_chart_data);
+                setUpBarChart(table.find('div.barchart'), bar_chart_data);
+            });
     }
 
     function setUpCheckBoxes() {
         $("#include_rejected_hccs").change(function(){
-            loadCandidateHcc($("#yearSlider").slider("value"));
+            loadCandidateHcc($("#yearSlider").slider("value"), includeRejectedHcc());
         });
-        $("#selected_hccs").change(loadAnalysis)
+        $("#include_selected_hccs").change(function(){
+             loadAnalysis(includeSelectedHcc());
+        });
     }
 
     function includeRejectedHcc(){
@@ -51,14 +50,14 @@ $(document).ready(function(){
     }
 
     function includeSelectedHcc(){
-        return $("#selected_hccs").prop("checked");
+        return $("#include_selected_hccs").prop("checked");
     }
 
-    function loadCandidateHcc(years){
+    function loadCandidateHcc(years, include_rejected){
         $.get("/candidate_hcc_table",{
             pt_id : $("#pt_id").val(),
             years: years,
-            include_rejected : includeRejectedHcc()
+            include_rejected : include_rejected
         }, function(response){
                 $("#candidate_hcc").find("div.content").html(response);
                 $('#candidate_hcc_table').DataTable({ "sDom": '<"top">rt<"bottom"lp><"clear">'});
@@ -69,7 +68,7 @@ $(document).ready(function(){
     function setUpCandidateHcc(){
         var candidate_hcc = $("#candidate_hcc");
         if(candidate_hcc.length > 0){
-            loadCandidateHcc($("#yearSlider").slider("value"))
+            loadCandidateHcc($("#yearSlider").slider("value"), includeRejectedHcc())
         }
     }
 
@@ -84,7 +83,7 @@ $(document).ready(function(){
     }
 
     function setUpCandidateHccEvents(){
-        $("#candidate_hcc_table td a").click(function(e){
+        $("#candidate_hcc_table").find("td a").click(function(e){
             e.preventDefault();
             var anchor = $(this);
             var action = anchor.attr("rel");
@@ -115,7 +114,6 @@ $(document).ready(function(){
             });
             $( "#verification_status" ).selectmenu();
         });
-
     }
 
     $("#lookUp").click(function(){
@@ -129,7 +127,6 @@ $(document).ready(function(){
             loading.hide("fast");
             container.html(response);
             $('#patient_list').DataTable({ "sDom": '<"top">rt<"bottom"lp><"clear">'});
-
         });
     });
 

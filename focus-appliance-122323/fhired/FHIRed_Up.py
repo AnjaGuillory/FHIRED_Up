@@ -97,33 +97,53 @@ class FHIRedUp:
                                         patient.listOfDig)
         self.listOfPatients.append(patient_info)
 
-    def get_current_risk_score_for_pt(self, patient_id):
+    def get_current_risk_score_for_pt(self, patient_id, include_selected):
         patient = self.queries.get_patient_by_id(patient_id)
+        if include_selected:  # Todo Calculate proper score
+            return 500
+
         return patient.risk_score
 
+    def get_candidate_risk_score_for_pt(self, patient_id, include_selected):
+        "TODO get risk core use in gauge"
+        if include_selected:  # Todo Calculate proper score
+            return 80
 
-    def get_candidate_risk_score_for_pt(self, patient_id):
-        "TODO get risk core use in gaugue"
         risk_value = 30
         return risk_value
 
-    def risks_scores_distribution(self, patient_id):
+    def risks_scores_distribution(self, patient_id, include_selected):
         # all the entries must sum to 100
-        entry_1 = Entities.RiskDistribution('Value 1', 56.33).for_chart()
-        entry_2 = Entities.RiskDistribution('Value 2', 24.03).for_chart()
-        entry_3 = Entities.RiskDistribution('Value 3', 10.38).for_chart()
-        entry_4 = Entities.RiskDistribution('Value 4', 4.77).for_chart()
+        if include_selected:  # testing_params
+            entry_1 = Entities.RiskDistribution('Value 1', 56.33).for_chart()
+            entry_2 = Entities.RiskDistribution('Value 2', 24.03).for_chart()
+            entry_3 = Entities.RiskDistribution('Value 3', 10.38).for_chart()
+            entry_4 = Entities.RiskDistribution('Value 4', 4.77).for_chart()
+        else:
+            entry_1 = Entities.RiskDistribution('Value 4', 5.77).for_chart()
+            entry_2 = Entities.RiskDistribution('Value 2', 44.03).for_chart()
+            entry_3 = Entities.RiskDistribution('Value 1', 16.33).for_chart()
+            entry_4 = Entities.RiskDistribution('Value 3', 20.38).for_chart()
 
         return list([entry_1, entry_2, entry_3, entry_4])
 
-    def risks_scores_list(self, patient_id):
+    def risks_scores_list(self, patient_id, include_selected):
         # all the entries does not need must sum to 100
-        entry_1 = Entities.RiskDistribution('Value 1', 56.33)
-        entry_2 = Entities.RiskDistribution('Value 2', 24.03)
-        entry_3 = Entities.RiskDistribution('Value 3', 10.38)
-        entry_4 = Entities.RiskDistribution('Value 4', 4.37)
-        entry_5 = Entities.RiskDistribution('Value 5', 3.27)
-        entry_6 = Entities.RiskDistribution('Value 6', 6.77)
-        entry_7 = Entities.RiskDistribution('Value 7', 7.47)
+        if include_selected: #testing_params
+            entry_1 = Entities.RiskDistribution('Value 1', 56.33)
+            entry_2 = Entities.RiskDistribution('Value 2', 24.03)
+            entry_3 = Entities.RiskDistribution('Value 3', 10.38)
+            entry_4 = Entities.RiskDistribution('Value 4', 4.37)
+            entry_5 = Entities.RiskDistribution('Value 5', 3.27)
+            entry_6 = Entities.RiskDistribution('Value 6', 6.77)
+            entry_7 = Entities.RiskDistribution('Value 7', 7.47)
+        else:
+            entry_1 = Entities.RiskDistribution('Value 3', 20.38)
+            entry_2 = Entities.RiskDistribution('Value 2', 34.03)
+            entry_3 = Entities.RiskDistribution('Value 1', 46.33)
+            entry_4 = Entities.RiskDistribution('Value 7', 5.47)
+            entry_5 = Entities.RiskDistribution('Value 5', 1.27)
+            entry_6 = Entities.RiskDistribution('Value 4', 14.37)
+            entry_7 = Entities.RiskDistribution('Value 6', 2.77)
 
         return list([entry_1, entry_2, entry_3, entry_4, entry_5, entry_6, entry_7])
