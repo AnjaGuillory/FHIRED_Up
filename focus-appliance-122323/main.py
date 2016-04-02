@@ -101,7 +101,17 @@ def candidate_hcc_table():
     fhir_queries = FHIRQueries()
     patient_id = request.args.get('pt_id', '')
     return render_template('candidate_hcc_table.html',
-                           data={"pt_id": patient_id, "hccs": fhir_queries.get_candidate_hcc_for(patient_id)})
+                           data={"pt_id": patient_id, "hccs": fhir_queries.get_candidate_hccs_for(patient_id)})
+
+
+@login_required
+@app.route('/current_hcc_table', methods=['GET'])
+def current_hcc_table():
+    fhir_queries = FHIRQueries()
+    patient_id = request.args.get('pt_id', '')
+    return render_template('current_hcc_table.html',
+                           data={"pt_id": patient_id, "hccs": fhir_queries.get_current_hccs_for(patient_id)})
+
 
 
 @login_required

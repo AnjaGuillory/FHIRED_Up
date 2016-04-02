@@ -12,7 +12,10 @@ $(document).ready(function(){
           min: 1,
           max: 5,
           range: "min",
-          value: 1
+          value: 1,
+          // slide : function(){
+          //   loadCandidateHcc()
+          // }
          });
     }
 
@@ -30,14 +33,29 @@ $(document).ready(function(){
         }
     }
 
-    function setUpCandidateHcc(){
-        var candidate_hcc = $("#candidate_hcc");
-        var pt_id = $("#pt_id");
-        if(candidate_hcc.length > 0){
-            $.get("/candidate_hcc_table",{ pt_id : pt_id.val() }, function(response){
-                candidate_hcc.find("div.content").html(response);
+    function loadCandidateHcc(container, pt_id, years){
+        $.get("/candidate_hcc_table",{ pt_id : pt_id, years: years }, function(response){
+                container.find("div.content").html(response);
                 $('#candidate_hcc_table').DataTable({ "sDom": '<"top">rt<"bottom"lp><"clear">'});
                 setUpCandidateHccEvents();
+            });
+    }
+
+    function setUpCandidateHcc(){
+        var candidate_hcc = $("#candidate_hcc");
+        var slider = $("#yearSlider");
+        var pt_id = $("#pt_id");
+        if(candidate_hcc.length > 0){
+            loadCandidateHcc(candidate_hcc, pt_id.val(), slider.slider("value"))
+        }
+    }
+
+    function setUpCurrentHcc(){
+        var current_hcc = $("#current_year_hcc");
+        var pt_id = $("#pt_id");
+        if(current_hcc.length > 0){
+            $.get("/current_hcc_table",{ pt_id : pt_id.val() }, function(response){
+                current_hcc.find("div.content").html(response);
             });
         }
     }
@@ -95,6 +113,7 @@ $(document).ready(function(){
     $(document).foundation();
     setUpYearSlider();
     setUpCandidateHcc();
+    setUpCurrentHcc();
     setUpAnalysis();
     setUpRiskMeter("#risk_meter");
 });

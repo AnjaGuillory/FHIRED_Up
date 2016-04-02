@@ -8,7 +8,11 @@ class Patient:
         self.gender = gender
         self.address = address
         self.list_of_diag = list_of_diag
-    
+        self.risk_score = self.cal_risk_score()
+
+    def cal_risk_score(self):
+        diags = self.list_of_diag
+        return 789
 
     @staticmethod
     def init_from_fhir_patient_resource(resource):
@@ -46,6 +50,8 @@ class Patient:
         return patient
 
 
+
+
 class Provider:
     def __init__(self, prov_id, name, list_of_patients):
         self.prov_id = prov_id
@@ -53,11 +59,13 @@ class Provider:
         self.listOfPatients = list_of_patients
 
 
-class CandidateHcc:
-    def __init__(self, code, name, risk_score):
+class Hcc:
+    def __init__(self, code, date, name, risk_score, notes):
         self.code = code
         self.name = name
+        self.date = date
         self.risk_score = risk_score
+        self.notes = notes
 
 
 class RiskDistribution:

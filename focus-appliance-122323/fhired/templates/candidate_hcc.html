@@ -44,7 +44,7 @@
                                      <label>Risk Score:</label>
                                 </div>
                                 <div class="large-7 columns">
-                                    <label><span>9000</span></label>
+                                    <label><span>{{ patient.risk_score }}</span></label>
                                 </div>
                             </div>
                             <br/>
@@ -57,30 +57,8 @@
                     <div class="callout small round">
                         <div id ="current_year_hcc" class="large-2 columns callout small round">
                             <h6>Current Year HCCs</h6>
-
-                            <div class="round borders">
-                                <ul>
-                                    <li>Code: </li>
-                                    <li>Name: </li>
-                                    <li>Date: </li>
-                                    <li>Notes: </li>
-                                </ul>
-                            </div>
-                             <div class="round borders">
-                                <ul>
-                                    <li>Code: </li>
-                                    <li>Name: </li>
-                                    <li>Date: </li>
-                                    <li>Notes: </li>
-                                </ul>
-                            </div>
-                             <div class="round borders">
-                                <ul>
-                                    <li>Code: </li>
-                                    <li>Name: </li>
-                                    <li>Date: </li>
-                                    <li>Notes: </li>
-                                </ul>
+                            <div class="content">
+                                Loading....
                             </div>
                         </div>
                         <div id="candidate_hcc" class="callout small large-6 columns round">

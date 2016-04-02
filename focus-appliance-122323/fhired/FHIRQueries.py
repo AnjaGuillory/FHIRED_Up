@@ -1,7 +1,7 @@
 ﻿import json
 import urllib2
 import urllib
-from datetime import datetime
+from datetime import datetime, date
 from fhired import Entities
 
 
@@ -113,13 +113,21 @@ class FHIRQueries:
 
         return None
 
-
-    def get_candidate_hcc_for(self, patient_id):
+    def get_current_hccs_for(self, patient_id):
         # TODO: make actual request
-        chcc1 = Entities.CandidateHcc("123", "Name 1", 20)
-        chcc2 = Entities.CandidateHcc("456", "Name 2", 20)
-        chcc3 = Entities.CandidateHcc("78", "Name 3", 20)
-        chcc4 = Entities.CandidateHcc("901", "Name 4", 20)
+        chcc1 = Entities.Hcc("123", date.today(),"Name 1", 20, "note 1")
+        chcc2 = Entities.Hcc("456", date.today(), "Name 2", 20, "note 2")
+        chcc3 = Entities.Hcc("78", date.today(), "Name 3", 20, "note 3")
+        chcc4 = Entities.Hcc("901", date.today(), "Name 4", 20, "note 4")
+        # TODO: make actual request
+        return list([chcc1, chcc2, chcc3, chcc4])
+
+    def get_candidate_hccs_for(self, patient_id):
+        # TODO: make actual request
+        chcc1 = Entities.Hcc("123",  date.today(), "Name 1", 20, "note 1")
+        chcc2 = Entities.Hcc("456",  date.today(), "Name 2", 20, "note 2")
+        chcc3 = Entities.Hcc("78",  date.today(), "Name 3", 20, "note 3")
+        chcc4 = Entities.Hcc("901",  date.today(), "Name 4", 20, "note 4")
         # TODO: make actual request
         return list([chcc1, chcc2, chcc3, chcc4])
 

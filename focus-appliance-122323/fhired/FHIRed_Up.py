@@ -6,6 +6,7 @@ from Snowmed_Mapping import ConvertSnowmedToHCC
 
 class FHIRedUp:
     def __init__(self):
+        self.listOfPatients = list()
         self.queries = FHIRQueries()
 
     def get_hccs_by_time_period(self, patient_id, current_year):
@@ -91,23 +92,23 @@ class FHIRedUp:
 
     def add_patient_to_provider(self, patient_id):
         """Adds a patient to the list of patients under the provider's care"""
-        patient = get_patient_by_id(patient_id)
-        patientInfo = Entities.Patient(patient_id, patient.name, patient.dob, patient.gender, patient.address,
-                                       patient.listOfDig)
-        self.listOfPatients.append(patientInfo)
+        patient = self.queries.get_patient_by_id(patient_id)
+        patient_info = Entities.Patient(patient_id, patient.name, patient.dob, patient.gender, patient.address,
+                                        patient.listOfDig)
+        self.listOfPatients.append(patient_info)
 
     def get_current_risk_score_for_pt(self, patient_id):
+        patient = self.queries.get_patient_by_id(patient_id)
+        return patient.risk_score
+
+
+    def get_candidate_risk_score_for_pt(self, patient_id):
         "TODO get risk core use in gaugue"
         risk_value = 30
         return risk_value
 
-
-    def get_candidate_risk_score_for_pt(self, patient_id):
-        risk_value = 20
-        return risk_value
-
     def risks_scores_distribution(self, patient_id):
-        #all the entries must sum to 100
+        # all the entries must sum to 100
         entry_1 = Entities.RiskDistribution('Value 1', 56.33).for_chart()
         entry_2 = Entities.RiskDistribution('Value 2', 24.03).for_chart()
         entry_3 = Entities.RiskDistribution('Value 3', 10.38).for_chart()
@@ -116,7 +117,7 @@ class FHIRedUp:
         return list([entry_1, entry_2, entry_3, entry_4])
 
     def risks_scores_list(self, patient_id):
-        #all the entries does not need must sum to 100
+        # all the entries does not need must sum to 100
         entry_1 = Entities.RiskDistribution('Value 1', 56.33)
         entry_2 = Entities.RiskDistribution('Value 2', 24.03)
         entry_3 = Entities.RiskDistribution('Value 3', 10.38)
@@ -126,4 +127,3 @@ class FHIRedUp:
         entry_7 = Entities.RiskDistribution('Value 7', 7.47)
 
         return list([entry_1, entry_2, entry_3, entry_4, entry_5, entry_6, entry_7])
-
