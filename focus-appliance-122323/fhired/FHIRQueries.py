@@ -69,8 +69,8 @@ class FHIRQueries:
         if int(patient_ID_data['total']):
             for patient in patient_ID_list['entry']:
                 patient_ID_list.append(patient['resource']['id'])
-        return patient_ID_list                
-            
+        return patient_ID_list
+
     def get_patient_for(self, query, count=10):
         """Returns a list of matching patients give the provided query.
 
@@ -84,21 +84,21 @@ class FHIRQueries:
 
         # TODO: Add support for paging
         # TODO: need to return totalMatches
-        
+
         patient_list = []
-        
+
         # add "_count" attribute if not included to restrict number of matches returned.
         if not '_count' in query: query['_count'] = count
 
         patient_ID_data = json.load(urllib2.urlopen(self.PATIENT_RESOURCE + urllib.urlencode(query)))
-        
+
         # get total number of matching patients.
         totalMatches = int(patient_ID_data['total'])
 
         if totalMatches > 0:
             for patient in patient_ID_data['entry']:
                 patient_list.append(Entities.Patient.init_from_fhir_patient_resource(patient['resource']))
-        
+
         return patient_list #, totalMatches
 
     def get_patient_by_id(self, patient_id):
@@ -120,14 +120,22 @@ class FHIRQueries:
         chcc3 = Entities.Hcc("78", date.today(), "Name 3", 20, "note 3")
         chcc4 = Entities.Hcc("901", date.today(), "Name 4", 20, "note 4")
         # TODO: make actual request
+
         return list([chcc1, chcc2, chcc3, chcc4])
 
-    def get_candidate_hccs_for(self, patient_id):
+    def get_candidate_hccs_for(self, patient_id, years, include_rejected):
         # TODO: make actual request
         chcc1 = Entities.Hcc("123",  date.today(), "Name 1", 20, "note 1")
         chcc2 = Entities.Hcc("456",  date.today(), "Name 2", 20, "note 2")
         chcc3 = Entities.Hcc("78",  date.today(), "Name 3", 20, "note 3")
         chcc4 = Entities.Hcc("901",  date.today(), "Name 4", 20, "note 4")
+
+        if years == 1 and not include_rejected:  # testing params
+            return list([chcc1, chcc3, chcc4])
+
+        if include_rejected:  # testing params
+            return list([chcc1, chcc2, chcc3, chcc4, chcc1, chcc2, chcc3, chcc4, chcc1, chcc2, chcc3, chcc4])
+
         # TODO: make actual request
         return list([chcc1, chcc2, chcc3, chcc4])
 

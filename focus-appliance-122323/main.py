@@ -100,17 +100,18 @@ def analysis_table():
 def candidate_hcc_table():
     fhir_queries = FHIRQueries()
     patient_id = request.args.get('pt_id', '')
-    return render_template('candidate_hcc_table.html',
-                           data={"pt_id": patient_id, "hccs": fhir_queries.get_candidate_hccs_for(patient_id)})
-
+    years = int(request.args.get('years', ''))
+    include_rejected = request.args.get('include_rejected', '') == "true"
+    hcss = fhir_queries.get_candidate_hccs_for(patient_id, years, include_rejected)
+    return render_template('candidate_hcc_table.html', data={"pt_id": patient_id, "hccs": hcss})
 
 @login_required
 @app.route('/current_hcc_table', methods=['GET'])
 def current_hcc_table():
     fhir_queries = FHIRQueries()
     patient_id = request.args.get('pt_id', '')
-    return render_template('current_hcc_table.html',
-                           data={"pt_id": patient_id, "hccs": fhir_queries.get_current_hccs_for(patient_id)})
+    hcss = fhir_queries.get_current_hccs_for(patient_id)
+    return render_template('current_hcc_table.html', data={"pt_id": patient_id, "hccs": hcss})
 
 
 

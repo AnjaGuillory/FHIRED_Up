@@ -9,14 +9,16 @@ $(document).ready(function(){
 
     function setUpYearSlider(){
         $("#yearSlider").slider({
-          min: 1,
-          max: 5,
-          range: "min",
-          value: 1,
-          // slide : function(){
-          //   loadCandidateHcc()
-          // }
-         });
+            min: 1,
+            max: 5,
+            range: "min",
+            value: 1,
+            slide : function( event, ui ) {
+                var year_text = ui.value > 1 ? ui.value+" years" : ui.value+" year";
+                $( "span#years-value" ).html(year_text);
+                loadCandidateHcc(ui.value);
+            }
+        });
     }
 
     function setUpAnalysis(){
@@ -33,20 +35,41 @@ $(document).ready(function(){
         }
     }
 
-    function loadCandidateHcc(container, pt_id, years){
-        $.get("/candidate_hcc_table",{ pt_id : pt_id, years: years }, function(response){
-                container.find("div.content").html(response);
+    function loadAnalysis(){
+
+    }
+
+    function setUpCheckBoxes() {
+        $("#include_rejected_hccs").change(function(){
+            loadCandidateHcc($("#yearSlider").slider("value"));
+        });
+        $("#selected_hccs").change(loadAnalysis)
+    }
+
+    function includeRejectedHcc(){
+       return $("#include_rejected_hccs").prop("checked");
+    }
+
+    function includeSelectedHcc(){
+        return $("#selected_hccs").prop("checked");
+    }
+
+    function loadCandidateHcc(years){
+        $.get("/candidate_hcc_table",{
+            pt_id : $("#pt_id").val(),
+            years: years,
+            include_rejected : includeRejectedHcc()
+        }, function(response){
+                $("#candidate_hcc").find("div.content").html(response);
                 $('#candidate_hcc_table').DataTable({ "sDom": '<"top">rt<"bottom"lp><"clear">'});
                 setUpCandidateHccEvents();
-            });
+        });
     }
 
     function setUpCandidateHcc(){
         var candidate_hcc = $("#candidate_hcc");
-        var slider = $("#yearSlider");
-        var pt_id = $("#pt_id");
         if(candidate_hcc.length > 0){
-            loadCandidateHcc(candidate_hcc, pt_id.val(), slider.slider("value"))
+            loadCandidateHcc($("#yearSlider").slider("value"))
         }
     }
 
@@ -115,6 +138,7 @@ $(document).ready(function(){
     setUpCandidateHcc();
     setUpCurrentHcc();
     setUpAnalysis();
+    setUpCheckBoxes();
     setUpRiskMeter("#risk_meter");
 });
 
