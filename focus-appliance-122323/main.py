@@ -142,6 +142,15 @@ def tests():
 
 
 @login_required
+@app.route('/create_sample')
+def create_sample():
+    from model import SampleModel
+    s = SampleModel(name="Test")
+    s.put()
+    return redirect(url_for('login'))
+
+
+@login_required
 @app.route('/candidate_hcc', methods=['get'])
 def candidate_hcc():
     fhir_queries = FHIRQueries()
