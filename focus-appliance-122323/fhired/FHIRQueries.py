@@ -2,7 +2,7 @@
 import urllib2
 import urllib
 from datetime import datetime, date
-from fhired import Entities
+import Entities
 
 
 # Basic Process Flow
@@ -11,14 +11,13 @@ from fhired import Entities
 # 2.  Pull all snowmed codes by most encounter ID
 # 3.  For each snowmed code, take only the record with the most recent service date
 
-
 class FHIRQueries:
     ENCOUNTERS_BY_PATIENT = 'http://polaris.i3l.gatech.edu:8080/gt-fhir-webapp/base/Encounter?patient='
     CONDITION_BY_ENCOUNTER = 'http://polaris.i3l.gatech.edu:8080/gt-fhir-webapp/base/Condition?encounter='
     PATIENT_ID_BY_NAME = 'http://polaris.i3l.gatech.edu:8080/gt-fhir-webapp/base/Patient?name='
     PATIENT_RESOURCE = 'http://polaris.i3l.gatech.edu:8080/gt-fhir-webapp/base/Patient?'
 
-    # These are the get queries I use to access the GaTech FHIR server
+    # # # These are the get queries I use to access the GaTech FHIR server
     def __init__(self):
         pass
 

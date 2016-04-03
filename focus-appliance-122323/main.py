@@ -1,10 +1,12 @@
 ﻿from flask import Flask, Response, session, request, flash, url_for, redirect, render_template, abort, g
 import jinja2
 from fhired import User
-from fhired.FHIRQueries import FHIRQueries
 from fhired.FHIRed_Up import FHIRedUp
+from fhired.FHIRQueries import FHIRQueries
 from fhired.test import testing
 import fhired.utils as utils
+from datetime import datetime
+
 
 from flask.ext.login import LoginManager, UserMixin, login_required, login_user, logout_user, current_user
 
@@ -85,12 +87,13 @@ def patient_lookup():
 def analysis_table():
     fhir_up = FHIRedUp()
     patient_id = request.args.get('pt_id', '')
+    year = (datetime.now().year) - int(request.args.get('years', '')) #starting in 2015
     include_selected = request.args.get('include_selected', '') == "true"
     score_lists = fhir_up.risks_scores_list(patient_id, include_selected)
 
     score_distribution = fhir_up.risks_scores_distribution(patient_id, include_selected)
     current_risk_score = fhir_up.get_current_risk_score_for_pt(patient_id, include_selected)
-    candidate_risk_score = fhir_up.get_candidate_risk_score_for_pt(patient_id, include_selected)
+    candidate_risk_score = fhir_up.get_candidate_risk_score_for_pt(patient_id, include_selected, year)
 
     bar_categories, bar_values = utils.get_categories_for_risks(score_lists)
     data = {

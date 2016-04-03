@@ -1,13 +1,15 @@
-from LookupTables import *
-from FHIRQueries import *
-from Entities import *
-from Snowmed_Mapping import ConvertSnowmedToHCC
+from fhired import *
+import Entities
+from LookupTables import LookupTables
+from SnowmedConverter import SnowmedConverter
+from FHIRQueries import FHIRQueries
 
 
-class FHIRedUp:
+class FHIRedUp():
     def __init__(self):
         self.listOfPatients = list()
         self.queries = FHIRQueries()
+        self.snowmed_converter = SnowmedConverter()
 
     def get_hccs_by_time_period(self, patient_id, current_year):
         """
@@ -35,7 +37,7 @@ class FHIRedUp:
                 # we developed a lookup tables to convert SNOMED codes to ICD9
                 # codes. 
                 # diagnosis_code = a tuple containing HCC, HCC description and Risk Score
-                diagnosis_code = ConvertSnowmedToHCC(Cond[0])
+                diagnosis_code = self.snowmed_converter.to_hcc(Cond[0])
 
                 if Enc[1] == current_year:
                     current_year_hccs.append(diagnosis_code)
@@ -90,49 +92,34 @@ class FHIRedUp:
                     break
         return current_year_hccs
 
-    def add_patient_to_provider(self, patient_id):
+    def add_patient_to_provider(self, patient_id, current_year):
         """Adds a patient to the list of patients under the provider's care"""
         patient = self.queries.get_patient_by_id(patient_id)
-        patient_info = Entities.Patient(patient_id, patient.name, patient.dob, patient.gender, patient.address,
-                                        patient.listOfDig)
+        patient_info = Entities.Patient(patient_id, patient.name, patient.dob, patient.gender, patient.address, current_year)
         self.listOfPatients.append(patient_info)
 
     def get_current_risk_score_for_pt(self, patient_id, include_selected):
         patient = self.queries.get_patient_by_id(patient_id)
         # I don't think we want to change this value when the include selected button is clicked
-        #if include_selected:  # Todo Calculate proper score
-        #    return 500
+        # if include_selected:  # Todo Calculate proper score
         return patient.risk_score
 
     def get_candidate_risk_score_for_pt(self, patient_id, include_selected, current_year):
         # Risk score for the patient's current year
-        risk_value = sum(LookupTables.hcc_to_risk_score_value(self.get_hccs_by_time_period( patient_id, current_year)[0])
-        if include_selected:  
+        look_up = LookupTables()
+
+        risk_value = 0
+        for hcc_by_time in self.get_hccs_by_time_period(patient_id, current_year)[0]:
+            risk_value += look_up.hcc_to_risk_score_value(hcc_by_time)
+
+        if include_selected:
             # add on the value for the "missing" HCCs
-            risk_value = risk_value + sum(LookupTables.hcc_to_risk_score_value(find_missing_diagnoses(self, self.get_hccs_by_time_period( patient_id, current_year)[0], self.get_hccs_by_time_period( patient_id, current_year)[1]))
+            missing_diag = self.find_missing_diagnoses(self.get_hccs_by_time_period(patient_id, current_year)[0],
+                                                       self.get_hccs_by_time_period(patient_id, current_year)[1])
+
+            risk_value = risk_value + sum(look_up.hcc_to_risk_score_value(missing_diag))
         return risk_value
 
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
     def risks_scores_distribution(self, patient_id, include_selected):
         # all the entries must sum to 100
         if include_selected:  # testing_params
@@ -150,7 +137,7 @@ class FHIRedUp:
 
     def risks_scores_list(self, patient_id, include_selected):
         # all the entries does not need must sum to 100
-        if include_selected: #testing_params
+        if include_selected:  # testing_params
             entry_1 = Entities.RiskDistribution('Value 1', 56.33)
             entry_2 = Entities.RiskDistribution('Value 2', 24.03)
             entry_3 = Entities.RiskDistribution('Value 3', 10.38)

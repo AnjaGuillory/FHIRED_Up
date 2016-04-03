@@ -12,23 +12,24 @@ $(document).ready(function(){
             min: 1,
             max: 5,
             range: "min",
-            value: 1,
+            value: 4    ,
             slide : function( event, ui ) {
                 var year_text = ui.value > 1 ? ui.value+" years" : ui.value+" year";
                 $( "span#years-value" ).html(year_text);
                 loadCandidateHcc(ui.value, includeRejectedHcc());
+                loadAnalysis(ui.value, includeSelectedHcc());
             }
         });
     }
 
     function setUpAnalysis(){
         if($("#analysis").length > 0){
-            loadAnalysis(includeSelectedHcc());
+            loadAnalysis($("#yearSlider").slider("value"), includeSelectedHcc());
         }
     }
 
-    function loadAnalysis(include_selected){
-        $.get("/analysis_table",{ pt_id : $("#pt_id").val(), include_selected : include_selected }, function(response){
+    function loadAnalysis(years, include_selected){
+        $.get("/analysis_table",{ pt_id : $("#pt_id").val(), include_selected : include_selected, years: years }, function(response){
                 $("#analysis").find("div.content").html(response);
                 var table = $('#analysis_table');
                 setUpPieChart(table.find('div.piechart'), pie_chart_data);
@@ -41,7 +42,7 @@ $(document).ready(function(){
             loadCandidateHcc($("#yearSlider").slider("value"), includeRejectedHcc());
         });
         $("#include_selected_hccs").change(function(){
-             loadAnalysis(includeSelectedHcc());
+             loadAnalysis($("#yearSlider").slider("value"), includeSelectedHcc());
         });
     }
 

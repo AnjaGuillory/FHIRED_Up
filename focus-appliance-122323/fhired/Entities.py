@@ -1,42 +1,41 @@
-﻿import FHIRQueries
-
+﻿from datetime import date
+from SnowmedConverter import SnowmedConverter
+from FHIRQueries import FHIRQueries
 
 
 class Patient:
-
-    def __init__(self, pt_id, name, dob, gender, address):
+    def __init__(self, pt_id, name, dob, gender, address, starting_year):
         self.pt_id = pt_id
         self.name = name
         self.dob = dob
         self.gender = gender
         self.address = address
         self.list_of_diag = self.set_diagnoses_list()
-        self.risk_score = self.cal_risk_score()
+        self.risk_score = self.cal_risk_score(starting_year)
 
-        
     def set_diagnoses_list(self):
         """Uses the patient ID to get the list of SNOMED
            codes for that patient's conditions from the FHIR server"""
-        X=FHIRQueries
+        queries = FHIRQueries()
         # The output of this query is a list:
         # [EncounterID, EncounterServiceYear, [list of [ConditionCode, ConditionName, ConditionCodingSystem]]]
-        self.list_of_diag = X.get_all_patients_conditions(self.pt_id)
-        
-        
-    def cal_risk_score(self, current_year):
+        return queries.get_all_patients_conditions(self.pt_id)
+
+    def cal_risk_score(self, starting_year):
         '''Calculates the patient's risk score for the 
            year entered as a parameter'''
-        riskScore = 0
-        alreadyAddedHCCs = []
+        risk_score = 0
+        already_added_hccs = []
+        converter = SnowmedConverter()
         # basically we loop through the diagnoses, convert them to HCCs and risk scores, and then sum up the risk scores
-        For enc in self.list_of_diag:
-            if enc[1] == current_year:
+        for enc in self.list_of_diag:
+            if enc[1] <= starting_year:
                 for diag in enc[2]:
-                    HCC = Snowmed_mapping.ConvertSnowmedToHCC(diag[0])
-                    if HCC[0] not in alreadyAddedHCCs:
-                       alreadyAddedHCCs.append(HCC[0])  #This makes sure we don't count an HCC more than once
-                       riskScore = riskScore+HCC[2]
-        return riskScore
+                    HCC = converter.to_hcc(diag[0])
+                    if HCC[0] not in already_added_hccs:
+                        already_added_hccs.append(HCC[0])  # This makes sure we don't count an HCC more than once
+                        risk_score = risk_score + HCC[2]
+        return risk_score
 
     @staticmethod
     def init_from_fhir_patient_resource(resource):
@@ -47,15 +46,15 @@ class Patient:
 
         Returns:
             Entities.Patient
-        """ 
-        patient = Patient(int(resource['id']), '', '', '', '', [])
-        
+        """
+        patient = Patient(int(resource['id']), '', '', '', '', date.today().year - 4)
+
         if 'birthDate' in resource: patient.dob = resource.get('birthDate')
         if 'gender' in resource: patient.gender = resource.get('gender')
 
         # format the name           
-        if 'name' in resource and len(resource['name']) > 0: 
-            if 'given' in resource['name'][0]: patient.name = ' '.join(resource['name'][0].get('given')) 
+        if 'name' in resource and len(resource['name']) > 0:
+            if 'given' in resource['name'][0]: patient.name = ' '.join(resource['name'][0].get('given'))
             if 'family' in resource['name'][0]: patient.name += ' ' + ' '.join(resource['name'][0].get('family'))
 
         # format address (use "home" address only)
@@ -72,8 +71,6 @@ class Patient:
         patient.address = address
 
         return patient
-
-
 
 
 class Provider:
@@ -98,4 +95,4 @@ class RiskDistribution:
         self.risk_score = risk_score
 
     def for_chart(self):
-        return {"name" : self.name, "y" : self.risk_score }
+        return {"name": self.name, "y": self.risk_score}

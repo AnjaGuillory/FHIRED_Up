@@ -17,7 +17,7 @@
 #                             Source is the website: https://www.nlm.nih.gov/research/umls/mapping_projects/snomedct_to_icd9cm_reimburse.html
 
 
-class LookupTables:
+class LookupTables():
 
     def __init__(self):
         self.ICD9_to_HCC_Dictionary = {
