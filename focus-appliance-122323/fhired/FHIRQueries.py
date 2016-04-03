@@ -2,6 +2,9 @@
 import urllib2
 import urllib
 from datetime import datetime, date
+
+from google.appengine.api import memcache
+
 import Entities
 
 
@@ -17,6 +20,15 @@ class FHIRQueries:
     PATIENT_ID_BY_NAME = 'http://polaris.i3l.gatech.edu:8080/gt-fhir-webapp/base/Patient?name='
     PATIENT_RESOURCE = 'http://polaris.i3l.gatech.edu:8080/gt-fhir-webapp/base/Patient?'
 
+    @staticmethod
+    def get_cache_or_request(request):
+        cached_result = memcache.get(request)
+        if cached_result is not None:
+            return cached_result
+        remote_result = json.load(urllib2.urlopen(request))
+        memcache.add(request, remote_result)
+        return remote_result
+
     # # # These are the get queries I use to access the GaTech FHIR server
     def __init__(self):
         pass
@@ -26,7 +38,7 @@ class FHIRQueries:
            the patient's encounter IDs and the start dates of the encounters
            :param patient_id: """
         encounter_list = []
-        encounter_data = json.load(urllib2.urlopen(self.ENCOUNTERS_BY_PATIENT + str(patient_id)))
+        encounter_data = FHIRQueries.get_cache_or_request(self.ENCOUNTERS_BY_PATIENT + str(patient_id))
         for enc in encounter_data['entry']:
             encounter_list.append((enc['resource']['id'], int(enc['resource']['period']['start'][:4])))
         return encounter_list
@@ -37,7 +49,7 @@ class FHIRQueries:
            :param encounter_id: """
         try:
             condition_list = []
-            condition_data = json.load(urllib2.urlopen(self.CONDITION_BY_ENCOUNTER + str(encounter_id)))
+            condition_data = FHIRQueries.get_cache_or_request(self.CONDITION_BY_ENCOUNTER + str(encounter_id))
             for cond in condition_data['entry'][0]['resource']['code']['coding']:
                 condition_list.append((cond['code'], cond['display'], cond['system']))
             return condition_list
@@ -64,7 +76,7 @@ class FHIRQueries:
     def get_patient_id_by_name(self, patient_name):
         '''submits a name to the FHIR server andf gets all the patient IDs that have that name'''
         patient_ID_list = []
-        patient_ID_data = json.load(urllib2.urlopen(self.PATIENT_ID_BY_NAME + str(patient_name)))
+        patient_ID_data = FHIRQueries.get_cache_or_request(self.PATIENT_ID_BY_NAME + str(patient_name))
         if int(patient_ID_data['total']):
             for patient in patient_ID_list['entry']:
                 patient_ID_list.append(patient['resource']['id'])
@@ -89,7 +101,7 @@ class FHIRQueries:
         # add "_count" attribute if not included to restrict number of matches returned.
         if not '_count' in query: query['_count'] = count
 
-        patient_ID_data = json.load(urllib2.urlopen(self.PATIENT_RESOURCE + urllib.urlencode(query)))
+        patient_ID_data = FHIRQueries.get_cache_or_request(self.PATIENT_RESOURCE + urllib.urlencode(query))
 
         # get total number of matching patients.
         totalMatches = int(patient_ID_data['total'])

@@ -1,6 +1,5 @@
 ﻿from datetime import date
 from SnowmedConverter import SnowmedConverter
-from FHIRQueries import FHIRQueries
 
 
 class Patient:
@@ -16,6 +15,7 @@ class Patient:
     def set_diagnoses_list(self):
         """Uses the patient ID to get the list of SNOMED
            codes for that patient's conditions from the FHIR server"""
+        from fhired.FHIRQueries import FHIRQueries
         queries = FHIRQueries()
         # The output of this query is a list:
         # [EncounterID, EncounterServiceYear, [list of [ConditionCode, ConditionName, ConditionCodingSystem]]]
