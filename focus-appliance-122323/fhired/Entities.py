@@ -1,15 +1,28 @@
-﻿
+﻿import FHIRQueries
+
+
+
 class Patient:
 
-    def __init__(self, pt_id, name, dob, gender, address, list_of_diag):
+    def __init__(self, pt_id, name, dob, gender, address):
         self.pt_id = pt_id
         self.name = name
         self.dob = dob
         self.gender = gender
         self.address = address
-        self.list_of_diag = list_of_diag
+        self.list_of_diag = self.set_diagnoses_list()
         self.risk_score = self.cal_risk_score()
 
+        
+    def set_diagnoses_list(self):
+        """Uses the patient ID to get the list of SNOMED
+           codes for that patient's conditions from the FHIR server"""
+        X=FHIRQueries
+        # The output of this query is a list:
+        # [EncounterID, EncounterServiceYear, [list of [ConditionCode, ConditionName, ConditionCodingSystem]]]
+        self.list_of_diag = X.get_all_patients_conditions(self.pt_id)
+        
+        
     def cal_risk_score(self):
         diags = self.list_of_diag
         return 789
