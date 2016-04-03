@@ -23,9 +23,20 @@ class Patient:
         self.list_of_diag = X.get_all_patients_conditions(self.pt_id)
         
         
-    def cal_risk_score(self):
-        diags = self.list_of_diag
-        return 789
+    def cal_risk_score(self, current_year):
+        '''Calculates the patient's risk score for the 
+           year entered as a parameter'''
+        riskScore = 0
+        alreadyAddedHCCs = []
+        # basically we loop through the diagnoses, convert them to HCCs and risk scores, and then sum up the risk scores
+        For enc in self.list_of_diag:
+            if enc[1] == current_year:
+                for diag in enc[2]:
+                    HCC = Snowmed_mapping.ConvertSnowmedToHCC(diag[0])
+                    if HCC[0] not in alreadyAddedHCCs:
+                       alreadyAddedHCCs.append(HCC[0])  #This makes sure we don't count an HCC more than once
+                       riskScore = riskScore+HCC[2]
+        return riskScore
 
     @staticmethod
     def init_from_fhir_patient_resource(resource):
