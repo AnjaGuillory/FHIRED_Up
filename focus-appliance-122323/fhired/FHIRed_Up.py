@@ -99,19 +99,40 @@ class FHIRedUp:
 
     def get_current_risk_score_for_pt(self, patient_id, include_selected):
         patient = self.queries.get_patient_by_id(patient_id)
-        if include_selected:  # Todo Calculate proper score
-            return 500
-
+        # I don't think we want to change this value when the include selected button is clicked
+        #if include_selected:  # Todo Calculate proper score
+        #    return 500
         return patient.risk_score
 
-    def get_candidate_risk_score_for_pt(self, patient_id, include_selected):
-        "TODO get risk core use in gauge"
-        if include_selected:  # Todo Calculate proper score
-            return 80
-
-        risk_value = 30
+    def get_candidate_risk_score_for_pt(self, patient_id, include_selected, current_year):
+        # Risk score for the patient's current year
+        risk_value = sum(LookupTables.hcc_to_risk_score_value(self.get_hccs_by_time_period( patient_id, current_year)[0])
+        if include_selected:  
+            # add on the value for the "missing" HCCs
+            risk_value = risk_value + sum(LookupTables.hcc_to_risk_score_value(find_missing_diagnoses(self, self.get_hccs_by_time_period( patient_id, current_year)[0], self.get_hccs_by_time_period( patient_id, current_year)[1]))
         return risk_value
 
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
     def risks_scores_distribution(self, patient_id, include_selected):
         # all the entries must sum to 100
         if include_selected:  # testing_params
