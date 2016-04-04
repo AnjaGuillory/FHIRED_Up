@@ -159,7 +159,13 @@ class FHIRQueries:
         pass
 
     def view_hcc_candidate_hcc_for(self, patient_id, hcc):
-        # TODO
+                patient = get_patient_by_id(patient_id)
+        candidate_hccs = get_candidate_hcc_for(patient_id)
+        if hcc in candidate_hccs:
+            for cand in candidate_hccs:
+                if cand == hcc:
+                    return cand
+        return None
         pass
 
 
