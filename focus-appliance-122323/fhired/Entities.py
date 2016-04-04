@@ -10,6 +10,7 @@ class Patient:
         self.gender = gender
         self.address = address
         self.list_of_diag = self.set_diagnoses_list()
+        self.list_of_cand_hccs = self.set_cand_hccs_list()
         self.risk_score = self.cal_risk_score(starting_year)
 
     def set_diagnoses_list(self):
@@ -20,6 +21,13 @@ class Patient:
         # The output of this query is a list:
         # [EncounterID, EncounterServiceYear, [list of [ConditionCode, ConditionName, ConditionCodingSystem]]]
         return queries.get_all_patients_conditions(self.pt_id)
+        
+    def set_cand_hccs_list(self):
+        """ Gets a list of candidate hccs  to set 
+            for the patient"""
+        from fhired.FHIRQueries import FHIRQueries
+        queries = FHIREQueries()
+        return queries.get_candidate_hccs_for(self.pt_id)
 
     def cal_risk_score(self, starting_year):
         '''Calculates the patient's risk score for the 
