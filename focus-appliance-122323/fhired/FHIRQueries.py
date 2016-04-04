@@ -166,6 +166,5 @@ class FHIRQueries:
                 if cand == hcc:
                     return cand
         return None
-        pass
 
 
