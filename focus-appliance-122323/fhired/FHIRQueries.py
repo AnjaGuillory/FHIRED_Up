@@ -141,30 +141,34 @@ class FHIRQueries:
         chcc3 = Entities.Hcc("78",  date.today(), "Name 3", 20, "note 3")
         chcc4 = Entities.Hcc("901",  date.today(), "Name 4", 20, "note 4")
 
-        if years == 1 and not include_rejected:  # testing params
+        """if years == 1 and not include_rejected:  # testing params
             return list([chcc1, chcc3, chcc4])
 
         if include_rejected:  # testing params
             return list([chcc1, chcc2, chcc3, chcc4, chcc1, chcc2, chcc3, chcc4, chcc1, chcc2, chcc3, chcc4])
 
         # TODO: make actual request
-        return list([chcc1, chcc2, chcc3, chcc4])
+        return list([chcc1, chcc2, chcc3, chcc4])"""
 
     def add_hcc_candidate_hcc_for(self, patient_id, hcc):
-        # TODO
+        """ Add candidate hcc to patient list of hccs """
+        patient = get_patient_by_id(patient_id)
+        patient.list_of_diag.append(hcc)
+        patient.list_of_cand_hccs(remove)
         pass
 
     def reject_hcc_candidate_hcc_for(self, patient_id, hcc):
-        # TODO
+        """ Remove candidate hcc from patient candidate hcc list"""
+        patient = get_patient_by_id(patient_id)
+        patient.list_of_diag.remove(hcc)
         pass
 
     def view_hcc_candidate_hcc_for(self, patient_id, hcc):
-                patient = get_patient_by_id(patient_id)
-        candidate_hccs = get_candidate_hcc_for(patient_id)
-        if hcc in candidate_hccs:
-            for cand in candidate_hccs:
-                if cand == hcc:
-                    return cand
-        return None
-
-
+        """ View a specific hcc within the patient candidate hcc list"""
+        patient = get_patient_by_id(patient_id)
+        cand_hccs = patient.list_of_cand_hccs
+        if hcc in cand_hccs:
+            for elem in cand_hccs:
+                if elem is hcc:
+                    return elem
+        return None        
