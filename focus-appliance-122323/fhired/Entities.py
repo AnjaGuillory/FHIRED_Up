@@ -9,8 +9,10 @@ class Patient:
         self.dob = dob
         self.gender = gender
         self.address = address
+
+        # TODO: It may be helpful if these three properties were loaded when needed (ie: lazy load) rather than every time a patient object is instantiated.
         self.list_of_diag = self.set_diagnoses_list()
-        self.list_of_cand_hccs = self.set_cand_hccs_list()
+        self.list_of_cand_hccs = self.set_cand_hccs_list()  # TODO: Getting the candidate HCCs should include the parameters "years" and "include_rejected".
         self.risk_score = self.cal_risk_score(starting_year)
 
     def set_diagnoses_list(self):
@@ -26,8 +28,9 @@ class Patient:
         """ Gets a list of candidate hccs  to set 
             for the patient"""
         from fhired.FHIRQueries import FHIRQueries
-        queries = FHIREQueries()
-        return queries.get_candidate_hccs_for(self.pt_id)
+        queries = FHIRQueries()
+        # TODO: The params passed to get_candidate_hccs_for() for "years" and "include_rejected" should be dynamic.
+        return queries.get_candidate_hccs_for(self.pt_id, 3, false)
 
     def cal_risk_score(self, starting_year):
         '''Calculates the patient's risk score for the 
