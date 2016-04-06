@@ -30,17 +30,22 @@
                 <hr/>
                 <h5>Home</h5>
                 <br/>
+
+
                 <div class="large-2 columns">
                     <h5>Find Patient</h5>
                 </div>
                 <div class="large-4 columns">
-                    <input id="pt_id" type="text" placeholder="Enter Patient ID or Name" />
+                    <input id="pt_id" type="text" placeholder="Enter Patient Name or ID" />
 
                     <input type="submit" style="display:none; visibility:hidden;" />
+                    <input type="radio" name="pt_lookupType" id="pt_lookupTypeName" value="name" checked="checked" title="Search by Patient Name" /><label for="pt_lookupTypeName" title="Search by Patient Name">Patient Name</label>
+                    <input type="radio" name="pt_lookupType" id="pt_lookupTypeId" value="id" title="Search by Patient ID" /><label for="pt_lookupTypeId" title="Search by Patient ID">Patient ID</label>
                 </div>
                 <div class="large-2 columns">
                     <a id="lookUp" type="submit" class="button expanded">Look Up</a>
                 </div>
+                
                 <br/>
                 <br/>
                 <br/>

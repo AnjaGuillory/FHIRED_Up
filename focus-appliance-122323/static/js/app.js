@@ -119,12 +119,14 @@ $(document).ready(function(){
 
     $("#lookUp").click(function(){
         var pt_id = $("#pt_id");
+        var pt_lookupType = $("input[name='pt_lookupType']:checked");
+        
         var dashboard = $("#dashboard");
         var container = dashboard.find("#patient_list_container");
         var loading = dashboard.find("#loading");
         loading.show("fast");
 
-        $.post("/patient_lookup",{ pt_id : pt_id.val() }, function(response){
+        $.post("/patient_lookup", { pt_id: pt_id.val(), pt_lookupType: pt_lookupType.val() }, function (response) {
             loading.hide("fast");
             container.html(response);
             $('#patient_list').DataTable({ "sDom": '<"top">rt<"bottom"lp><"clear">'});

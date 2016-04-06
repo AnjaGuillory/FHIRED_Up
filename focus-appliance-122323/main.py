@@ -1,5 +1,6 @@
 ﻿from flask import Flask, Response, session, request, flash, url_for, redirect, render_template, abort, g
 import jinja2
+import logging
 from fhired import User
 from fhired.FHIRed_Up import FHIRedUp
 from fhired.FHIRQueries import FHIRQueries
@@ -74,12 +75,21 @@ def login():
 def patient_lookup():
     fhir_queries = FHIRQueries()
 
-    # TODO: (time permitting) Add support for other search options such as patient id, gender, dob, city, state
+    # TODO: (time permitting) Add support for other search options such as patient gender, dob, city, state
 
     # build list of querystring params passed to the FHIR server.
-    query = {'name': request.form['pt_id']}
 
-    return render_template('patient_lookup.html', data=fhir_queries.get_patient_for(query))
+    #logging.log(logging.INFO, request.form['pt_lookupType'])
+    
+    if (request.form['pt_lookupType'] == 'id'):
+        # search by patient Id
+        query = {'_id': request.form['pt_id']}
+    else:   
+        # search by name
+        query = {'name': request.form['pt_id']}
+
+    #query = {'name': request.form['pt_id']}
+    return render_template('patient_lookup.html', data=fhir_queries.get_patient_for(query, 50))
 
 
 @login_required

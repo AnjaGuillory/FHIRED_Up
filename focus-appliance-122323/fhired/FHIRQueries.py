@@ -83,7 +83,7 @@ class FHIRQueries:
         return patient_ID_list
 
     def get_patient_for(self, query, count=10):
-        """Returns a list of matching patients give the provided query.
+        """Returns a list of matching patients given the provided query.
 
         Args:
             query (dictionary):  Valid keys: _id, name, given, birthdate, gender,  (for details: http://polaris.i3l.gatech.edu:8080/gt-fhir-webapp/resource?serverId=gatechrealease&resource=Patient)
@@ -102,6 +102,7 @@ class FHIRQueries:
         if not '_count' in query: query['_count'] = count
 
         patient_ID_data = FHIRQueries.get_cache_or_request(self.PATIENT_RESOURCE + urllib.urlencode(query))
+        #patient_ID_data = json.load(urllib2.urlopen(self.PATIENT_RESOURCE + urllib.urlencode(query)))
 
         # get total number of matching patients.
         totalMatches = int(patient_ID_data['total'])
