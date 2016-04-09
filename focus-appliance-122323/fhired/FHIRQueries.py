@@ -153,20 +153,20 @@ class FHIRQueries:
 
     def add_hcc_candidate_hcc_for(self, patient_id, hcc):
         """ Add candidate hcc to patient list of hccs """
-        patient = get_patient_by_id(patient_id)
+        patient = self.get_patient_by_id(patient_id)
         patient.list_of_diag.append(hcc)
         patient.list_of_cand_hccs(remove)
         pass
 
     def reject_hcc_candidate_hcc_for(self, patient_id, hcc):
         """ Remove candidate hcc from patient candidate hcc list"""
-        patient = get_patient_by_id(patient_id)
+        patient = self.get_patient_by_id(patient_id)
         patient.list_of_diag.remove(hcc)
         pass
 
     def view_hcc_candidate_hcc_for(self, patient_id, hcc):
         """ View a specific hcc within the patient candidate hcc list"""
-        patient = get_patient_by_id(patient_id)
+        patient = self.get_patient_by_id(patient_id)
         cand_hccs = patient.list_of_cand_hccs
         if hcc in cand_hccs:
             for elem in cand_hccs:
