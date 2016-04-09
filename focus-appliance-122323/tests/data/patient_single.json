@@ -1,0 +1,56 @@
+{
+  "resourceType": "Bundle",
+  "meta": {
+    "lastUpdated": "2016-04-09T15:36:39.504-04:00"
+  },
+  "link": [
+    {
+      "url": "http:\/\/polaris.i3l.gatech.edu:8080\/gt-fhir-webapp\/base\/Patient?name=Acosta",
+      "relation": "self"
+    }
+  ],
+  "entry": [
+    {
+      "search": {
+        "mode": "match"
+      },
+      "resource": {
+        "name": [
+          {
+            "given": [
+              "Paul",
+              "G"
+            ],
+            "family": [
+              "Acosta"
+            ]
+          }
+        ],
+        "resourceType": "Patient",
+        "text": {
+          "status": "generated",
+          "div": "<div><div class=\"hapiHeaderText\"> Paul G <b>ACOSTA <\/b><\/div><table class=\"hapiPropertyTable\"><tbody><tr><td>Address<\/td><td><span>5539 Oak Drive <\/span><br \/><span><\/span><br \/><span>Atlanta <\/span><span>GA <\/span><\/td><\/tr><tr><td>Date of birth<\/td><td><span>03 May 1980<\/span><\/td><\/tr><\/tbody><\/table><\/div>"
+        },
+        "address": [
+          {
+            "postalCode": "30387",
+            "city": "Atlanta",
+            "use": "home",
+            "line": [
+              "5539 Oak Drive"
+            ],
+            "state": "GA"
+          }
+        ],
+        "birthDate": "1980-05-03",
+        "gender": "male",
+        "active": true,
+        "id": "57"
+      },
+      "fullUrl": "http:\/\/polaris.i3l.gatech.edu:8080\/gt-fhir-webapp\/base\/Patient\/57"
+    }
+  ],
+  "total": 1,
+  "type": "searchset",
+  "id": "7b2e8fba-4c44-4a5f-b310-0a3df6a96df2"
+}

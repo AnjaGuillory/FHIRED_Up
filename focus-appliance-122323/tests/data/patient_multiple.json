@@ -1,0 +1,95 @@
+{
+  "resourceType": "Bundle",
+  "meta": {
+    "lastUpdated": "2016-04-09T15:43:26.045-04:00"
+  },
+  "link": [
+    {
+      "url": "http:\/\/polaris.i3l.gatech.edu:8080\/gt-fhir-webapp\/base\/Patient?name=Paul",
+      "relation": "self"
+    }
+  ],
+  "entry": [
+    {
+      "search": {
+        "mode": "match"
+      },
+      "resource": {
+        "name": [
+          {
+            "given": [
+              "Paul",
+              "G"
+            ],
+            "family": [
+              "Acosta"
+            ]
+          }
+        ],
+        "resourceType": "Patient",
+        "text": {
+          "status": "generated",
+          "div": "<div><div class=\"hapiHeaderText\"> Paul G <b>ACOSTA <\/b><\/div><table class=\"hapiPropertyTable\"><tbody><tr><td>Address<\/td><td><span>5539 Oak Drive <\/span><br \/><span><\/span><br \/><span>Atlanta <\/span><span>GA <\/span><\/td><\/tr><tr><td>Date of birth<\/td><td><span>03 May 1980<\/span><\/td><\/tr><\/tbody><\/table><\/div>"
+        },
+        "address": [
+          {
+            "postalCode": "30387",
+            "city": "Atlanta",
+            "use": "home",
+            "line": [
+              "5539 Oak Drive"
+            ],
+            "state": "GA"
+          }
+        ],
+        "birthDate": "1980-05-03",
+        "gender": "male",
+        "active": true,
+        "id": "57"
+      },
+      "fullUrl": "http:\/\/polaris.i3l.gatech.edu:8080\/gt-fhir-webapp\/base\/Patient\/57"
+    },
+    {
+      "search": {
+        "mode": "match"
+      },
+      "resource": {
+        "name": [
+          {
+            "given": [
+              "Nicholas",
+              "D"
+            ],
+            "family": [
+              "Paul"
+            ]
+          }
+        ],
+        "resourceType": "Patient",
+        "text": {
+          "status": "generated",
+          "div": "<div><div class=\"hapiHeaderText\"> Nicholas D <b>PAUL <\/b><\/div><table class=\"hapiPropertyTable\"><tbody><tr><td>Address<\/td><td><span>138 Spring Court <\/span><br \/><span><\/span><br \/><span>Atlanta <\/span><span>GA <\/span><\/td><\/tr><tr><td>Date of birth<\/td><td><span>03 March 1991<\/span><\/td><\/tr><\/tbody><\/table><\/div>"
+        },
+        "address": [
+          {
+            "postalCode": "30383",
+            "city": "Atlanta",
+            "use": "home",
+            "line": [
+              "138 Spring Court"
+            ],
+            "state": "GA"
+          }
+        ],
+        "birthDate": "1991-03-03",
+        "gender": "male",
+        "active": true,
+        "id": "222"
+      },
+      "fullUrl": "http:\/\/polaris.i3l.gatech.edu:8080\/gt-fhir-webapp\/base\/Patient\/222"
+    }
+  ],
+  "total": 2,
+  "type": "searchset",
+  "id": "a696a920-a854-47c8-b1a9-66501ff986e5"
+}
