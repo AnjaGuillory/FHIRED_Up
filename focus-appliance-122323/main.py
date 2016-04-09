@@ -4,7 +4,6 @@ import logging
 from fhired import User
 from fhired.FHIRed_Up import FHIRedUp
 from fhired.FHIRQueries import FHIRQueries
-from fhired.test import testing
 import fhired.utils as utils
 from datetime import datetime
 
@@ -163,13 +162,6 @@ def view_candidate_hcc():
     hcc = request.args.get('hcc', '')
     return render_template('view_candidate_hcc.html',
                            data={"pt_id": patient_id, "hcc": fhir_queries.view_hcc_candidate_hcc_for(patient_id, hcc)})
-
-
-@login_required
-@app.route('/tests')
-def tests():
-    output = testing()
-    return render_template('tests.html', data=output)
 
 
 @login_required
