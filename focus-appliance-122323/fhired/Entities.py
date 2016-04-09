@@ -30,7 +30,7 @@ class Patient:
         from fhired.FHIRQueries import FHIRQueries
         queries = FHIRQueries()
         # TODO: The params passed to get_candidate_hccs_for() for "years" and "include_rejected" should be dynamic.
-        return queries.get_candidate_hccs_for(self.pt_id, 3, false)
+        return queries.get_candidate_hccs_for(self.pt_id, 3, False)
 
     def cal_risk_score(self, starting_year):
         '''Calculates the patient's risk score for the 
