@@ -17,6 +17,7 @@ app.secret_key = "^{N^Em4B-SDV^QZ6/w[-keJ6'+KK{dt~Yz_GQmvp"
 app.config['SESSION_TYPE'] = 'filesystem'
 login_manager = LoginManager()
 login_manager.init_app(app)
+fhir_up = FHIRedUp()
 
 
 @login_manager.user_loader
@@ -74,35 +75,32 @@ def login():
 @app.route('/patient_lookup', methods=['POST'])
 def patient_lookup():
     fhir_queries = FHIRQueries()
-
     # TODO: (time permitting) Add support for other search options such as patient gender, dob, city, state
 
     # build list of querystring params passed to the FHIR server.
+    # logging.log(logging.INFO, request.form['pt_lookupType'])
 
-    #logging.log(logging.INFO, request.form['pt_lookupType'])
-    
-    if (request.form['pt_lookupType'] == 'id'):
+    if request.form['pt_lookupType'] == 'id':
         # search by patient Id
         query = {'_id': request.form['pt_id']}
-    else:   
+    else:
         # search by name
         query = {'name': request.form['pt_id']}
 
-    #query = {'name': request.form['pt_id']}
+    # query = {'name': request.form['pt_id']}
     return render_template('patient_lookup.html', data=fhir_queries.get_patient_for(query, 50))
 
 
 @login_required
 @app.route('/analysis_table', methods=['GET'])
 def analysis_table():
-    fhir_up = FHIRedUp()
-    patient_id = request.args.get('pt_id', '')
+    patient_id = int(request.args.get('pt_id', ''))
     year = Entities.get_current_year() - int(request.args.get('years', ''))
     include_selected = request.args.get('include_selected', '') == "true"
     score_lists = fhir_up.risks_scores_list(patient_id, include_selected)
 
+    current_risk_score = fhir_up.get_current_risk_score_for_pt(patient_id)
     score_distribution = fhir_up.risks_scores_distribution(patient_id, include_selected)
-    current_risk_score = fhir_up.get_current_risk_score_for_pt(patient_id, include_selected)
     candidate_risk_score = fhir_up.get_candidate_risk_score_for_pt(patient_id, include_selected, year)
 
     bar_categories, bar_values = utils.get_categories_for_risks(score_lists)
@@ -118,7 +116,6 @@ def analysis_table():
 @login_required
 @app.route('/candidate_hcc_table', methods=['GET'])
 def candidate_hcc_table():
-    fhir_up = FHIRedUp()
     patient_id = request.args.get('pt_id', '')
     max_past_years = Entities.get_current_year() - int(request.args.get('years', ''))
     include_rejected = request.args.get('include_rejected', '') == "true"
@@ -129,7 +126,6 @@ def candidate_hcc_table():
 @login_required
 @app.route('/current_hcc_table', methods=['GET'])
 def current_hcc_table():
-    fhir_up = FHIRedUp()
     patient_id = request.args.get('pt_id', '')
     hccs = fhir_up.get_current_hccs_for(patient_id)
     return render_template('current_hcc_table.html', data={"pt_id": patient_id, "hccs": hccs})
@@ -138,7 +134,6 @@ def current_hcc_table():
 @login_required
 @app.route('/add_candidate_hcc', methods=['POST'])
 def add_candidate_hcc():
-    fhir_up = FHIRedUp()
     patient_id = request.args.get('pt_id', '')
     hcc = request.args.get('hcc', '')
     return render_template('add_candidate_hcc.html',
@@ -148,7 +143,6 @@ def add_candidate_hcc():
 @login_required
 @app.route('/reject_candidate_hcc', methods=['POST'])
 def reject_candidate_hcc():
-    fhir_up = FHIRedUp()
     patient_id = request.args.get('pt_id', '')
     hcc = request.args.get('hcc', '')
     return render_template('reject_candidate_hcc.html',
@@ -158,7 +152,6 @@ def reject_candidate_hcc():
 @login_required
 @app.route('/view_candidate_hcc', methods=['POST'])
 def view_candidate_hcc():
-    fhir_up = FHIRedUp()
     patient_id = request.args.get('pt_id', '')
     hcc = request.args.get('hcc', '')
     return render_template('view_candidate_hcc.html',
@@ -177,16 +170,14 @@ def create_sample():
 @login_required
 @app.route('/candidate_hcc', methods=['get'])
 def candidate_hcc():
-    fhir_queries = FHIRQueries()
-    fhir_up = FHIRedUp()
     patient_id = request.args.get('pt_id', '')
-    patient = fhir_queries.get_patient_by_id(patient_id)
-    include_selected = False # TODO Get from persistence
-    risk_value = fhir_up.get_current_risk_score_for_pt(patient_id, include_selected)
+    patient = fhir_up.get_patient_by_id(patient_id)
+    risk_score = fhir_up.get_current_risk_score_for_pt(patient_id)
+    risk_meter = min(risk_score*30, 100)
     current_year = Entities.get_current_year()
 
     if patient is not None:
-        return render_template('candidate_hcc.html', patient=patient, risk_meter=risk_value, current_year=current_year)
+        return render_template('candidate_hcc.html', patient=patient, risk_meter=risk_meter, risk_score=risk_score, current_year=current_year)
     return render_template('404.html'), 404
 
 

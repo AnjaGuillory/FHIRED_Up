@@ -216,6 +216,7 @@ function setUpBarChart(container, data){
 }
 
 function setUpRiskMeter(selector){
+     var value = parseFloat($(selector).attr("rel"));
      $(selector).highcharts({
 
         chart: {
@@ -303,7 +304,7 @@ function setUpRiskMeter(selector){
 
         series: [{
             name: 'Risk',
-            data: [$(selector).attr("rel")],
+            data: [value],
             tooltip: {
                 valueSuffix: ' %'
             }

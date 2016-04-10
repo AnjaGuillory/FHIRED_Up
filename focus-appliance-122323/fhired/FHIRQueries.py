@@ -116,7 +116,7 @@ class FHIRQueries:
     def get_patient_by_id(self, patient_id):
 
         # build list of querystring params passed to the FHIR server.
-        query = {'_id': patient_id}
+        query = {'_id': unicode(patient_id)}
 
         patients = self.get_patient_for(query)
         for patient in patients:

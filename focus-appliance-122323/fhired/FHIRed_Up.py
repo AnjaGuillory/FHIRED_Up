@@ -4,13 +4,23 @@ from datetime import date
 from LookupTables import LookupTables
 from SnowmedConverter import SnowmedConverter
 from FHIRQueries import FHIRQueries
+from google.appengine.api import memcache
 
 
 class FHIRedUp():
     def __init__(self):
-        # self.listOfPatients = list()
         self.queries = FHIRQueries()
         self.snowmed_converter = SnowmedConverter()
+
+    def get_patient_by_id(self, pt_id):
+        key = 'pt-{0}'.format(str(pt_id))
+        patient = memcache.get(key)
+        if patient is not None:
+            return patient
+
+        patient = self.queries.get_patient_by_id(pt_id)
+        memcache.add(key, patient)
+        return patient
 
     def get_hccs(self, patient_id, current_year, max_past_years=None):
         """
@@ -102,14 +112,12 @@ class FHIRedUp():
         # """Adds a patient to the list of patients under the provider's care"""
         # patient = self.queries.get_patient_by_id(patient_id)
         # patient_info = Entities.Patient(patient_id, patient.name, patient.dob, patient.gender, patient.address, current_year)
-        # self.listOfPatients.append(patient_info)
+        # self.list_of_patients.append(patient_info)
         pass
 
-    def get_current_risk_score_for_pt(self, patient_id, include_selected):
-        patient = self.queries.get_patient_by_id(patient_id)
-        # I don't think we want to change this value when the include selected button is clicked
-        # if include_selected:  # Todo Calculate proper score
-        return patient.risk_score
+    def get_current_risk_score_for_pt(self, pt_id):
+        patient = self.get_patient_by_id(pt_id)
+        return patient.get_risk_score()
 
     def get_candidate_risk_score_for_pt(self, patient_id, include_selected, current_year):
         # Risk score for the patient's current year
@@ -123,45 +131,30 @@ class FHIRedUp():
         if include_selected:
             # add on the value for the "missing" HCCs
             missing_diag = self.find_missing_diagnoses(current_year_hccs, history_hccs)
-
             risk_value = risk_value + sum(look_up.hcc_to_risk_score_value(missing_diag))
         return risk_value
 
     def risks_scores_distribution(self, patient_id, include_selected):
-        # all the entries must sum to 100
-        if include_selected:  # testing_params
-            entry_1 = Entities.RiskDistribution('Value 1', 56.33).for_chart()
-            entry_2 = Entities.RiskDistribution('Value 2', 24.03).for_chart()
-            entry_3 = Entities.RiskDistribution('Value 3', 10.38).for_chart()
-            entry_4 = Entities.RiskDistribution('Value 4', 4.77).for_chart()
-        else:
-            entry_1 = Entities.RiskDistribution('Value 4', 5.77).for_chart()
-            entry_2 = Entities.RiskDistribution('Value 2', 44.03).for_chart()
-            entry_3 = Entities.RiskDistribution('Value 1', 16.33).for_chart()
-            entry_4 = Entities.RiskDistribution('Value 3', 20.38).for_chart()
+        hccs = self.get_current_hccs_for(patient_id)
+        score_lists = list()
+        for hcc in hccs:
+            score_lists.append(Entities.RiskDistribution(hcc.name, hcc.risk_score).for_chart())
 
-        return list([entry_1, entry_2, entry_3, entry_4])
+        if include_selected:  # testing_params
+            pass
+
+        return score_lists
 
     def risks_scores_list(self, patient_id, include_selected):
-        # all the entries does not need must sum to 100
-        if include_selected:  # testing_params
-            entry_1 = Entities.RiskDistribution('Value 1', 56.33)
-            entry_2 = Entities.RiskDistribution('Value 2', 24.03)
-            entry_3 = Entities.RiskDistribution('Value 3', 10.38)
-            entry_4 = Entities.RiskDistribution('Value 4', 4.37)
-            entry_5 = Entities.RiskDistribution('Value 5', 3.27)
-            entry_6 = Entities.RiskDistribution('Value 6', 6.77)
-            entry_7 = Entities.RiskDistribution('Value 7', 7.47)
-        else:
-            entry_1 = Entities.RiskDistribution('Value 3', 20.38)
-            entry_2 = Entities.RiskDistribution('Value 2', 34.03)
-            entry_3 = Entities.RiskDistribution('Value 1', 46.33)
-            entry_4 = Entities.RiskDistribution('Value 7', 5.47)
-            entry_5 = Entities.RiskDistribution('Value 5', 1.27)
-            entry_6 = Entities.RiskDistribution('Value 4', 14.37)
-            entry_7 = Entities.RiskDistribution('Value 6', 2.77)
+        hccs = self.get_current_hccs_for(patient_id)
+        score_lists = list()
+        for hcc in hccs:
+            score_lists.append(Entities.RiskDistribution(hcc.name, hcc.risk_score))
 
-        return list([entry_1, entry_2, entry_3, entry_4, entry_5, entry_6, entry_7])
+        if include_selected:  # testing_params
+            pass
+
+        return score_lists
 
     def get_current_hccs_for(self, patient_id):
         current_year = Entities.get_current_year()

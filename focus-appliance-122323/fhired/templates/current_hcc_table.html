@@ -5,7 +5,7 @@
                 <li>Code: {{ entry.code }}</li>
                 <li>Name: {{ entry.name }}</li>
                 <li>Date: {{ entry.date }}</li>
-                <li>Notes: {{ entry.notes }}</li>
+                <li><a data-id="{{ entry.code }}" rel="view" href="#">View</a></li>
             </ul>
         </div>
     {% endfor %}

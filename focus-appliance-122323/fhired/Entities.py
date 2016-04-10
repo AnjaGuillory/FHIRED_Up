@@ -1,46 +1,50 @@
-﻿from datetime import date
-from SnowmedConverter import SnowmedConverter
+﻿from SnowmedConverter import SnowmedConverter
+from fhired.FHIRQueries import FHIRQueries
 
 
 def get_current_year():
-    return 2014 #there is no data for 2016
+    return 2014  # there is no data for 2016
 
 
 class Patient:
-    def __init__(self, pt_id, name, dob, gender, address, current_year):
+    def __init__(self, pt_id, name, dob, gender, address):
         self.pt_id = pt_id
         self.name = name
         self.dob = dob
         self.gender = gender
         self.address = address
-        # TODO: It may be helpful if these three properties were loaded when needed (ie: lazy load) rather than every time a patient object is instantiated.
-        self.list_of_diag = self.set_diagnoses_list()
-        self.risk_score = self.cal_risk_score(current_year)
+        self.__diagnoses_list = None
+        self.__risk_score = None
 
-    def set_diagnoses_list(self):
+    def get_diagnoses_list(self):
         """Uses the patient ID to get the list of SNOMED
            codes for that patient's conditions from the FHIR server"""
-        from fhired.FHIRQueries import FHIRQueries
-        queries = FHIRQueries()
+        if self.__diagnoses_list is None:
+            queries = FHIRQueries()
+            self.__diagnoses_list = queries.get_all_patients_conditions(self.pt_id)
         # The output of this query is a list:
         # [EncounterID, EncounterServiceYear, [list of [ConditionCode, ConditionName, ConditionCodingSystem]]]
-        return queries.get_all_patients_conditions(self.pt_id)
-        
-    def cal_risk_score(self, current_year):
-        '''Calculates the patient's risk score for the 
+        return self.__diagnoses_list
+
+    def get_risk_score(self):
+        '''Calculates the patient's risk score for the
            year entered as a parameter'''
-        risk_score = 0
-        already_added_hccs = []
-        converter = SnowmedConverter()
-        # basically we loop through the diagnoses, convert them to HCCs and risk scores, and then sum up the risk scores
-        for enc in self.list_of_diag:
-            if enc[1] == current_year:
-                for diag in enc[2]:
-                    HCC = converter.to_hcc(diag[0])
-                    if HCC is not None and HCC[0] not in already_added_hccs:
-                        already_added_hccs.append(HCC[0])  # This makes sure we don't count an HCC more than once
-                        risk_score = risk_score + HCC[2]
-        return risk_score
+        if self.__risk_score is None:
+            risk_score = 0
+            already_added_hccs = []
+            converter = SnowmedConverter()
+            # basically we loop through the diagnoses, convert them to HCCs and risk scores, and then sum up the risk scores
+            for enc in self.get_diagnoses_list():
+                if enc[1] == get_current_year():
+                    for diag in enc[2]:
+                        HCC = converter.to_hcc(diag[0])
+                        if HCC is not None and HCC[0] not in already_added_hccs:
+                            already_added_hccs.append(HCC[0])  # This makes sure we don't count an HCC more than once
+                            risk_score = risk_score + HCC[2]
+
+            self.__risk_score = risk_score
+
+        return self.__risk_score
 
     @staticmethod
     def init_from_fhir_patient_resource(resource):
@@ -52,7 +56,7 @@ class Patient:
         Returns:
             Entities.Patient
         """
-        patient = Patient(int(resource['id']), '', '', '', '', get_current_year())
+        patient = Patient(int(resource['id']), '', '', '', '')
 
         if 'birthDate' in resource: patient.dob = resource.get('birthDate')
         if 'gender' in resource: patient.gender = resource.get('gender')
