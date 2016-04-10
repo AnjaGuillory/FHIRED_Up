@@ -11,13 +11,15 @@ class SnowmedConverter:
     def to_hcc(self, snowmedCode):
         try:
             code = Snowmed_to_HCC_Dictionary.get(str(snowmedCode))
-            hcc = code[2]
-            hccDescription = code[3]
-            riskScore = code[4]
-            if hcc=='NA' or hccDescription == 'NA':
-                return None
-            else:
-                return (hcc, hccDescription, riskScore)
+            if code is not None:
+                hcc = code[2]
+                hccDescription = code[3]
+                riskScore = code[4]
+                if hcc=='NA' or hccDescription == 'NA':
+                    return None
+                else:
+                    return (hcc, hccDescription, riskScore)
+            return None
         except ValueError:
             print ValueError
             return None

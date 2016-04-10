@@ -12797,7 +12797,7 @@ class LookupTables():
         return self.HCC_to_Risk_Score_Dictionary[hcc][0]
 
     def hcc_to_risk_score_value(self, hcc):
-        return self.HCC_to_Risk_Score_Dictionary[hcc][1]
+        return self.HCC_to_Risk_Score_Dictionary[int(hcc.code)][1]
 
     def snowmed_to_icd9(self, showmed):
         return self.SNOMED_to_ICD9_Dictionary[showmed]

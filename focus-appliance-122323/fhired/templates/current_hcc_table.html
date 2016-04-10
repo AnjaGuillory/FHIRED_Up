@@ -1,10 +1,21 @@
-{% for entry in data.hccs %}
+{% if data.hccs %}
+    {% for entry in data.hccs %}
+        <div class="round borders">
+            <ul>
+                <li>Code: {{ entry.code }}</li>
+                <li>Name: {{ entry.name }}</li>
+                <li>Date: {{ entry.date }}</li>
+                <li>Notes: {{ entry.notes }}</li>
+            </ul>
+        </div>
+    {% endfor %}
+{% else %}
     <div class="round borders">
         <ul>
-            <li>Code: {{ entry.code }}</li>
-            <li>Name: {{ entry.name }}</li>
-            <li>Date: {{ entry.date }}</li>
-            <li>Notes: {{ entry.notes }}</li>
+            <li>Code: N/A </li>
+            <li>Name: N/A</li>
+            <li>Date: N/A</li>
+            <li>Notes: N/A</li>
         </ul>
     </div>
-{% endfor %}
+{% endif %}

@@ -27,7 +27,6 @@
         <ul class="sub-nav menu" role="navigation" title="Filter Menu List">
         {% if g.user.is_authenticated%}
             <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
-            <li><a href="{{ url_for('tests') }}">Tests</a></li>
             <li><a href="{{ url_for('logout') }}">Logout</a></li>
         {% endif %}
         {% if not g.user.is_authenticated%}

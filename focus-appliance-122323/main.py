@@ -4,6 +4,7 @@ import logging
 from fhired import User
 from fhired.FHIRed_Up import FHIRedUp
 from fhired.FHIRQueries import FHIRQueries
+import fhired.Entities as Entities
 import fhired.utils as utils
 from datetime import datetime
 
@@ -96,7 +97,7 @@ def patient_lookup():
 def analysis_table():
     fhir_up = FHIRedUp()
     patient_id = request.args.get('pt_id', '')
-    year = (datetime.now().year) - int(request.args.get('years', '')) #starting in 2015
+    year = Entities.get_current_year() - int(request.args.get('years', ''))
     include_selected = request.args.get('include_selected', '') == "true"
     score_lists = fhir_up.risks_scores_list(patient_id, include_selected)
 
@@ -117,51 +118,51 @@ def analysis_table():
 @login_required
 @app.route('/candidate_hcc_table', methods=['GET'])
 def candidate_hcc_table():
-    fhir_queries = FHIRQueries()
+    fhir_up = FHIRedUp()
     patient_id = request.args.get('pt_id', '')
-    years = int(request.args.get('years', ''))
+    max_past_years = Entities.get_current_year() - int(request.args.get('years', ''))
     include_rejected = request.args.get('include_rejected', '') == "true"
-    hcss = fhir_queries.get_candidate_hccs_for(patient_id, years, include_rejected)
-    return render_template('candidate_hcc_table.html', data={"pt_id": patient_id, "hccs": hcss})
+    hccs = fhir_up.get_candidate_hccs_for(patient_id, max_past_years, include_rejected)
+    return render_template('candidate_hcc_table.html', data={"pt_id": patient_id, "hccs": hccs})
 
 
 @login_required
 @app.route('/current_hcc_table', methods=['GET'])
 def current_hcc_table():
-    fhir_queries = FHIRQueries()
+    fhir_up = FHIRedUp()
     patient_id = request.args.get('pt_id', '')
-    hcss = fhir_queries.get_current_hccs_for(patient_id)
-    return render_template('current_hcc_table.html', data={"pt_id": patient_id, "hccs": hcss})
+    hccs = fhir_up.get_current_hccs_for(patient_id)
+    return render_template('current_hcc_table.html', data={"pt_id": patient_id, "hccs": hccs})
 
 
 @login_required
 @app.route('/add_candidate_hcc', methods=['POST'])
 def add_candidate_hcc():
-    fhir_queries = FHIRQueries()
+    fhir_up = FHIRedUp()
     patient_id = request.args.get('pt_id', '')
     hcc = request.args.get('hcc', '')
     return render_template('add_candidate_hcc.html',
-                           data={"pt_id": patient_id, "hcc": fhir_queries.add_hcc_candidate_hcc_for(patient_id, hcc)})
+                           data={"pt_id": patient_id, "hcc": fhir_up.add_hcc_candidate_hcc_for(patient_id, hcc)})
 
 
 @login_required
 @app.route('/reject_candidate_hcc', methods=['POST'])
 def reject_candidate_hcc():
-    fhir_queries = FHIRQueries()
+    fhir_up = FHIRedUp()
     patient_id = request.args.get('pt_id', '')
     hcc = request.args.get('hcc', '')
     return render_template('reject_candidate_hcc.html',
-                           data={"pt_id": patient_id, "hcc": fhir_queries.reject_hcc_candidate_hcc_for(patient_id, hcc)})
+                           data={"pt_id": patient_id, "hcc": fhir_up.reject_hcc_candidate_hcc_for(patient_id, hcc)})
 
 
 @login_required
 @app.route('/view_candidate_hcc', methods=['POST'])
 def view_candidate_hcc():
-    fhir_queries = FHIRQueries()
+    fhir_up = FHIRedUp()
     patient_id = request.args.get('pt_id', '')
     hcc = request.args.get('hcc', '')
     return render_template('view_candidate_hcc.html',
-                           data={"pt_id": patient_id, "hcc": fhir_queries.view_hcc_candidate_hcc_for(patient_id, hcc)})
+                           data={"pt_id": patient_id, "hcc": fhir_up.view_hcc_candidate_hcc_for(patient_id, hcc)})
 
 
 @login_required
@@ -182,9 +183,10 @@ def candidate_hcc():
     patient = fhir_queries.get_patient_by_id(patient_id)
     include_selected = False # TODO Get from persistence
     risk_value = fhir_up.get_current_risk_score_for_pt(patient_id, include_selected)
+    current_year = Entities.get_current_year()
 
     if patient is not None:
-        return render_template('candidate_hcc.html', patient=patient, risk_meter=risk_value)
+        return render_template('candidate_hcc.html', patient=patient, risk_meter=risk_value, current_year=current_year)
     return render_template('404.html'), 404
 
 

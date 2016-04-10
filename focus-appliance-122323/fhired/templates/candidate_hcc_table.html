@@ -4,10 +4,12 @@
                 <th></th>
                 <th>Code</th>
                 <th>Name</th>
-                <th>Risk Score %</th>
+                <th>Risk Score</th>
+                <th>Date</th>
             </tr>
         </thead>
         <tbody>
+        {% if data.hccs %}
             {% for entry in data.hccs %}
                 <tr>
                     <td>
@@ -18,7 +20,16 @@
                     <td>{{ entry.code }}</td>
                     <td>{{ entry.name }}</td>
                     <td>{{ entry.risk_score }}</td>
+                    <td>{{ entry.date }}</td>
                 </tr>
             {% endfor %}
+        {% else %}
+             <tr>
+                 <td>N/A</td>
+                 <td>N/A</td>
+                 <td></td>
+                <td>N/A</td>
+             </tr>
+        {% endif %}
         </tbody>
     </table>

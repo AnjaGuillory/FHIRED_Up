@@ -10,7 +10,7 @@ $(document).ready(function(){
     function setUpYearSlider(){
         $("#yearSlider").slider({
             min: 1,
-            max: 5,
+            max: 10,
             range: "min",
             value: 4    ,
             slide : function( event, ui ) {
