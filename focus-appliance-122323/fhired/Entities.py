@@ -20,6 +20,7 @@ class Patient:
         """Uses the patient ID to get the list of SNOMED
            codes for that patient's conditions from the FHIR server"""
         if self.__diagnoses_list is None:
+            from fhired.FHIRQueries import FHIRQueries
             queries = FHIRQueries()
             self.__diagnoses_list = queries.get_all_patients_conditions(self.pt_id)
         # The output of this query is a list:
