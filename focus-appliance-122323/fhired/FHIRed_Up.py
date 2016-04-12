@@ -173,6 +173,7 @@ class FHIRedUp():
         """ Add candidate hcc to patient list of hccs """
         hccDetails = HCCDetails(pt_id=patient_id, hcc=hcc, status=status, snowMedCodes=snow_meds, notes=notes)
         hccDetails.put()
+        return hccDetails
 
     def reject_hcc_candidate_hcc_for(self, patient_id, hcc):
         """ Remove candidate hcc from patient candidate hcc list"""

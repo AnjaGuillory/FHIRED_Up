@@ -1,4 +1,6 @@
-﻿import jinja2
+﻿from google.appengine.ext import db
+
+import jinja2
 from flask import Flask, request, flash, url_for, redirect, render_template, g, jsonify
 from flask.ext.login import LoginManager, login_required, login_user, logout_user, current_user
 
@@ -138,7 +140,8 @@ def add_candidate_hcc():
         snow_meds = request.form.getlist("snow_med")
         notes = request.form.get("notes")
         status = request.form.get("verification_status")
-        return jsonify(fhir_up.add_hcc_candidate_hcc_for(patient_id, hcc, snow_meds, notes, status))
+        details = fhir_up.add_hcc_candidate_hcc_for(patient_id, hcc, snow_meds, notes, status)
+        return jsonify(db.to_dict(details))
     else:
         patient_id = int(request.args.get('pt_id', ''))
         hcc = int(request.args.get('hcc', ''))
