@@ -93,24 +93,50 @@ $(document).ready(function(){
         });
     }
 
+    function getBehaviorForAction(action, dialog, pt_id, hcc){
+        var data = dialog.find("form").serializeArray();
+        data.push({ name: "pt_id", value : pt_id });
+        data.push({ name: "hcc", value : hcc });
+        $.post(getPathForAction(action), data, function(){
+            alert("Saved");
+            dialog.dialog( "close" );
+        });
+    }
+
+    function getPathForAction(action){
+        return "/"+action+"_candidate_hcc";
+    }
+
+    function setUpAllSnowMeds(){
+        $("input.allSnowMeds").change(function(){
+                var checkbox = $(this);
+                var allCheckboxes = $("ul.snowMedsContainer input:checkbox");
+                if(checkbox.prop("checked")){
+                    allCheckboxes.prop("checked",true);
+                }else{
+                    allCheckboxes.prop("checked",false);
+                }
+        });
+    }
+
     function loadHccFor(action, id){
-        var pt_id = $("#pt_id");
+        var pt_id = $("#pt_id").val();
         var action_title = action.capitalize();
-        $.post("/"+action+"_candidate_hcc",{ pt_id : pt_id.val(), hcc: id}, function(response){
-            $("#candidate_hcc_dashboard").append(response);
+        $.get(getPathForAction(action),{ pt_id : pt_id, hcc: id}, function(response){
+            $('#candidate_hcc_dashboard').find(".dialogContainer").html(response);
+            setUpAllSnowMeds();
             var buttons = {};
             buttons[action_title] =  function() {
-                            alert("Added");
-                            $( this ).dialog( "close" );
+                getBehaviorForAction(action, $(this), pt_id, id);
             };
             buttons["Cancel"] = function() {
-                          $( this ).dialog( "close" );
+              $( this ).dialog( "close" );
             };
 
             $( "#"+action+"_dialog" ).dialog({
                   modal: true,
                   width: 1000,
-                  height: 550,
+                  height: 600,
                   buttons: buttons
             });
             $( "#verification_status" ).selectmenu();

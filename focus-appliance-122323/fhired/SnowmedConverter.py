@@ -1,6 +1,3 @@
-# Spiro Ganas
-# 2/24/16
-#
 # Converts snowmed code to ICD10, then ICD10 to ICD9, then ICD9 to Massachusetts HCCs and platinum risk scores.
 from SnowmedDict import Snowmed_to_HCC_Dictionary
 
@@ -24,5 +21,15 @@ class SnowmedConverter:
             print ValueError
             return None
 
-
-
+    def from_hcc(self, hcc): #Slow :(, adding ticket
+        try:
+            snow_meds = list()
+            for snow_med, code in Snowmed_to_HCC_Dictionary.iteritems():
+                if code[2] is not None and code[2] == str(hcc):
+                    hccDescription = code[3]
+                    riskScore = code[4]
+                    snow_meds.append((snow_med, hccDescription, riskScore))
+            return snow_meds
+        except ValueError:
+            print ValueError
+            return None

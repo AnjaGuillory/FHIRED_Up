@@ -1,15 +1,13 @@
-﻿from flask import Flask, Response, session, request, flash, url_for, redirect, render_template, abort, g
-import jinja2
-import logging
-from fhired import User
-from fhired.FHIRed_Up import FHIRedUp
-from fhired.FHIRQueries import FHIRQueries
+﻿import jinja2
+from flask import Flask, request, flash, url_for, redirect, render_template, g
+from flask.ext.login import LoginManager, login_required, login_user, logout_user, current_user
+
 import fhired.Entities as Entities
 import fhired.utils as utils
-from datetime import datetime
-
-
-from flask.ext.login import LoginManager, UserMixin, login_required, login_user, logout_user, current_user
+from fhired import User
+from fhired.FHIRQueries import FHIRQueries
+from fhired.FHIRed_Up import FHIRedUp
+from lib.flask import json
 
 app = Flask(__name__)
 app.jinja_loader = jinja2.FileSystemLoader('fhired/templates')
@@ -116,7 +114,7 @@ def analysis_table():
 @login_required
 @app.route('/candidate_hcc_table', methods=['GET'])
 def candidate_hcc_table():
-    patient_id = request.args.get('pt_id', '')
+    patient_id = int(request.args.get('pt_id', ''))
     max_past_years = Entities.get_current_year() - int(request.args.get('years', ''))
     include_rejected = request.args.get('include_rejected', '') == "true"
     hccs = fhir_up.get_candidate_hccs_for(patient_id, max_past_years, include_rejected)
@@ -126,51 +124,52 @@ def candidate_hcc_table():
 @login_required
 @app.route('/current_hcc_table', methods=['GET'])
 def current_hcc_table():
-    patient_id = request.args.get('pt_id', '')
+    patient_id = int(request.args.get('pt_id', ''))
     hccs = fhir_up.get_current_hccs_for(patient_id)
     return render_template('current_hcc_table.html', data={"pt_id": patient_id, "hccs": hccs})
 
 
 @login_required
-@app.route('/add_candidate_hcc', methods=['POST'])
+@app.route('/add_candidate_hcc', methods=['POST', 'GET'])
 def add_candidate_hcc():
-    patient_id = request.args.get('pt_id', '')
-    hcc = request.args.get('hcc', '')
-    return render_template('add_candidate_hcc.html',
-                           data={"pt_id": patient_id, "hcc": fhir_up.add_hcc_candidate_hcc_for(patient_id, hcc)})
+
+    if request.method == "POST":
+        patient_id = int(request.form.get("pt_id"))
+        hcc = int(request.form.get("hcc"))
+        snow_meds = request.form.getlist("snow_med")
+        notes = request.form.get("notes")
+        status = request.form.get("verification_status")
+        return json.jsonify(fhir_up.add_hcc_candidate_hcc_for(patient_id, hcc, snow_meds, notes, status))
+    else:
+        patient_id = int(request.args.get('pt_id', ''))
+        hcc = int(request.args.get('hcc', ''))
+        snow_meds = fhir_up.get_snow_meds_for(hcc)
+        return render_template('add_candidate_hcc.html', data={"pt_id": patient_id, "snow_meds": snow_meds})
+
 
 
 @login_required
-@app.route('/reject_candidate_hcc', methods=['POST'])
+@app.route('/reject_candidate_hcc', methods=['POST', 'GET'])
 def reject_candidate_hcc():
-    patient_id = request.args.get('pt_id', '')
-    hcc = request.args.get('hcc', '')
+    patient_id = int(request.args.get('pt_id', ''))
+    hcc = int(request.args.get('hcc', ''))
     return render_template('reject_candidate_hcc.html',
                            data={"pt_id": patient_id, "hcc": fhir_up.reject_hcc_candidate_hcc_for(patient_id, hcc)})
 
 
 @login_required
-@app.route('/view_candidate_hcc', methods=['POST'])
+@app.route('/view_candidate_hcc', methods=['GET'])
 def view_candidate_hcc():
-    patient_id = request.args.get('pt_id', '')
+    patient_id = int(request.args.get('pt_id', ''))
     hcc = request.args.get('hcc', '')
     return render_template('view_candidate_hcc.html',
                            data={"pt_id": patient_id, "hcc": fhir_up.view_hcc_candidate_hcc_for(patient_id, hcc)})
 
 
 @login_required
-@app.route('/create_sample')
-def create_sample():
-    from model import SampleModel
-    s = SampleModel(name="Test")
-    s.put()
-    return redirect(url_for('login'))
-
-
-@login_required
 @app.route('/candidate_hcc', methods=['get'])
 def candidate_hcc():
-    patient_id = request.args.get('pt_id', '')
+    patient_id = int(request.args.get('pt_id', ''))
     patient = fhir_up.get_patient_by_id(patient_id)
     risk_score = fhir_up.get_current_risk_score_for_pt(patient_id)
     risk_meter = min(risk_score*30, 100)

@@ -6,6 +6,8 @@ from SnowmedConverter import SnowmedConverter
 from FHIRQueries import FHIRQueries
 from google.appengine.api import memcache
 
+from fhired.HCCDetails import HCCDetails
+
 
 class FHIRedUp():
     def __init__(self):
@@ -167,12 +169,10 @@ class FHIRedUp():
         _, history_hccs = self.get_hccs(patient_id, current_year, max_past_years)
         return history_hccs
 
-    def add_hcc_candidate_hcc_for(self, patient_id, hcc):  # Waiting for a proper implementation of a candidate list.
+    def add_hcc_candidate_hcc_for(self, patient_id, hcc, snow_meds, notes, status):
         """ Add candidate hcc to patient list of hccs """
-        # patient = self.queries.get_patient_by_id(patient_id)
-        # patient.list_of_diag.append(hcc)
-        # patient.list_of_cand_hccs(remove)
-        pass
+        hccDetails = HCCDetails(pt_id=patient_id, hcc=hcc, status=status, snowMedCodes=snow_meds, notes=notes)
+        hccDetails.put()
 
     def reject_hcc_candidate_hcc_for(self, patient_id, hcc):
         """ Remove candidate hcc from patient candidate hcc list"""
@@ -190,3 +190,6 @@ class FHIRedUp():
         #             return elem
         # return None
         pass
+
+    def get_snow_meds_for(self, hcc):
+        return self.snowmed_converter.from_hcc(hcc)

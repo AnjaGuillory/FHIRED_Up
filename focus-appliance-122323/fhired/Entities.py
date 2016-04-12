@@ -1,5 +1,5 @@
 ﻿from SnowmedConverter import SnowmedConverter
-from fhired.FHIRQueries import FHIRQueries
+from fhired.FHIRQueries import *
 
 
 def get_current_year():

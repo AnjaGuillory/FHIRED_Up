@@ -74,7 +74,7 @@ class FHIRQueries:
             return []
 
     def get_patient_id_by_name(self, patient_name):
-        '''submits a name to the FHIR server andf gets all the patient IDs that have that name'''
+        """submits a name to the FHIR server and gets all the patient IDs that have that name"""
         patient_ID_list = []
         patient_ID_data = FHIRQueries.get_cache_or_request(self.PATIENT_ID_BY_NAME + str(patient_name))
         if int(patient_ID_data['total']):

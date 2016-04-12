@@ -87,6 +87,22 @@
     font-size: .875rem;
 }
 
+ul.snowMedsContainer{
+    overflow: scroll;
+    overflow-x: hidden;
+    height: 250px;
+}
+
+ul.snowMedsContainer input{
+    padding: 0;
+    margin: 0;
+}
+
+ul.snowMedsContainer li{
+    height: 26px;
+    list-style: none;
+}
+
 #footer{
     height: 50px;
     position: fixed;
