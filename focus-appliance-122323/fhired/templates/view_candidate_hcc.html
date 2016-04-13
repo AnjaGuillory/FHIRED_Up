@@ -1,41 +1,83 @@
 <div id="view_dialog" class="hcc_dialog" title="View Hcc">
-    <div class="row">
+    <form class="row">
          <div class="large-6 columns">
+             <div class="row">
+                 <label for="verification_status">Verification Status</label>
+                 <select name="verification_status" id="verification_status">
+                       {% for key, value in dict({"confirm" : "Confirm", "provisional":"Provisional"
+                                                  , "differential" : "Differential", "refuted" : "Refuted" ,
+                                                  "entered_error" : "Entered-in-error",
+                                                  "unknown" : "Unknown" }).iteritems()
+                       %}
+                           {% if key == status %}
+                            <option value="{{ key }}" selected="selected"> {{ value }}</option>
+                           {% else %}
+                            <option value="{{ key }}"> {{ value }}</option>
+                           {% endif %}
+                       {% endfor %}
+                </select>
+             </div>
+             <div class="separator"></div>
             <div class="row">
                 <div class="large-7 columns">
                     <h5>SnowMed Codes:</h5>
                 </div>
+                <div class="large-5 columns">
+                    <h6>(Select All that Apply)</h6>
+                </div>
             </div>
              <div class="row callout small round">
-                 <div class="row">
+                 <div style="margin-left: 5px" class="row">
                      <div class="large-1 columns">
-                        <input type="checkbox" id="all"/>
+                        <input type="checkbox" class="allSnowMeds"/>
                      </div>
-                     <div class="large-6 columns">
+                     <div class="large-4 columns">
                         <span>Code</span>
                      </div>
-                     <div class="large-5 columns">
+                     <div class="large-7 columns">
                         <span>Name</span>
                      </div>
-                 </div>
-                 <div class="row">
-                    <div class="large-1 columns">
-                       <input type="checkbox" id="all"/>
-                    </div>
-                    <div class="large-6 columns">
-                        <input type="text" value="Code"/>
-                    </div>
-                    <div class="large-5 columns">
-                        <input type="text" value="Name"/>
-                    </div>
-                 </div>
+                </div>
+                 <ul class="snowMedsContainer">
+
+                    {% if snow_meds %}
+                        {% for entry in snow_meds %}
+                            <li class="row">
+                                <div class="large-1 columns">
+                                    {% if entry[0] in save_snow_meds %}
+                                        <input type="checkbox" name="snow_med" value="{{ entry[0] }}" checked="checked"/>
+                                     {% else %}
+                                        <input type="checkbox" name="snow_med" value="{{ entry[0] }}"/>
+                                    {% endif %}
+                                </div>
+                                <div class="large-5 columns">
+                                    <label>{{ entry[0] }}</label>
+                                </div>
+                                <div class="large-5 columns">
+                                    <label>{{ entry[1] }}</label>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    {% else %}
+                    <li class="row">
+                        <div class="large-1 columns"></div>
+                        <div class="large-6 columns">
+                            <label>N/A</label>
+                        </div>
+                        <div class="large-5 columns">
+                            <label>N/A</label>
+                        </div>
+                    </li>
+                    {% endif %}
+                 </ul>
              </div>
-        </div>
+         </div>
         <div class="large-6 columns">
             <label>
                 Notes:
-                <textarea rows="15"></textarea>
+                <textarea name="notes" rows="15">{{ notes }}</textarea>
             </label>
         </div>
-    </div>
+    </form>
 </div>
+

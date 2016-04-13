@@ -6,7 +6,7 @@ from SnowmedConverter import SnowmedConverter
 from FHIRQueries import FHIRQueries
 from google.appengine.api import memcache
 
-from fhired.HCCDetails import HCCDetails
+from fhired.CurrentHcc import CurrentHcc
 
 
 class FHIRedUp():
@@ -55,7 +55,7 @@ class FHIRedUp():
                 # diagnosis_code = a tuple containing HCC, HCC description and Risk Score
                 diagnosis_code = self.snowmed_converter.to_hcc(Cond[0])
                 if diagnosis_code is not None:
-                    hcc = Entities.Hcc(diagnosis_code[0], Enc[1], diagnosis_code[1], diagnosis_code[2], "")
+                    hcc = Entities.Hcc(int(diagnosis_code[0]), Enc[1], diagnosis_code[1], diagnosis_code[2], "")
 
                     if Enc[1] == current_year:
                         current_year_hccs.append(hcc)
@@ -118,8 +118,12 @@ class FHIRedUp():
         pass
 
     def get_current_risk_score_for_pt(self, pt_id):
-        patient = self.get_patient_by_id(pt_id)
-        return patient.get_risk_score()
+        risk_score = 0
+        current_hccs = self.get_current_hccs_for(pt_id)
+        for current_hcc in current_hccs:
+            risk_score += current_hcc.get_hcc().risk_score
+
+        return risk_score
 
     def get_candidate_risk_score_for_pt(self, patient_id, include_selected, current_year):
         # Risk score for the patient's current year
@@ -139,7 +143,8 @@ class FHIRedUp():
     def risks_scores_distribution(self, patient_id, include_selected):
         hccs = self.get_current_hccs_for(patient_id)
         score_lists = list()
-        for hcc in hccs:
+        for hcc_details in hccs:
+            hcc = hcc_details.get_hcc()
             score_lists.append(Entities.RiskDistribution(hcc.name, hcc.risk_score).for_chart())
 
         if include_selected:  # testing_params
@@ -150,7 +155,8 @@ class FHIRedUp():
     def risks_scores_list(self, patient_id, include_selected):
         hccs = self.get_current_hccs_for(patient_id)
         score_lists = list()
-        for hcc in hccs:
+        for hcc_details in hccs:
+            hcc = hcc_details.get_hcc()
             score_lists.append(Entities.RiskDistribution(hcc.name, hcc.risk_score))
 
         if include_selected:  # testing_params
@@ -158,10 +164,16 @@ class FHIRedUp():
 
         return score_lists
 
-    def get_current_hccs_for(self, patient_id):
+    def set_current_year_hccs_for(self, patient_id):
         current_year = Entities.get_current_year()
         current_year_hccs, _ = self.get_hccs(patient_id, current_year)
-        return current_year_hccs
+        for hcc in current_year_hccs:
+            snow_meds = self.get_snow_meds_for(hcc.code)
+            self.add_hcc_candidate_for(patient_id, hcc.code, snow_meds, "", "confirm")
+
+    def get_current_hccs_for(self, patient_id):
+        self.set_current_year_hccs_for(patient_id) # check if the new pt is missing hcc and adds it
+        return CurrentHcc.get_all_by("pt_id", patient_id)
 
     # Candidate = History for now, waiting on spiro
     def get_candidate_hccs_for(self, patient_id, max_past_years, include_rejected):
@@ -169,11 +181,18 @@ class FHIRedUp():
         _, history_hccs = self.get_hccs(patient_id, current_year, max_past_years)
         return history_hccs
 
-    def add_hcc_candidate_hcc_for(self, patient_id, hcc, snow_meds, notes, status):
+    def add_hcc_candidate_for(self, patient_id, hcc, snow_meds, notes, status):
         """ Add candidate hcc to patient list of hccs """
-        hccDetails = HCCDetails(pt_id=patient_id, hcc=hcc, status=status, snowMedCodes=snow_meds, notes=notes)
-        hccDetails.put()
-        return hccDetails
+        if snow_meds is not None:
+            snow_meds = [str(x) for x in snow_meds]
+
+        if not CurrentHcc.exits(patient_id, hcc):
+            currentHcc = CurrentHcc(pt_id=patient_id,
+                                    hcc=hcc, status=status,
+                                    snowMedCodes=snow_meds, notes=notes)
+            currentHcc.put()
+            return currentHcc
+        return None
 
     def reject_hcc_candidate_hcc_for(self, patient_id, hcc):
         """ Remove candidate hcc from patient candidate hcc list"""
@@ -181,16 +200,20 @@ class FHIRedUp():
         # patient.list_of_diag.remove(hcc)
         pass
 
-    def view_hcc_candidate_hcc_for(self, patient_id, hcc):
+    def view_current_hcc_for(self, patient_id, hcc):
         """ View a specific hcc within the patient candidate hcc list"""
-        patient = self.queries.get_patient_by_id(patient_id)
-        # cand_hccs = patient.list_of_candidate_hccs
-        # if hcc in cand_hccs:
-        #     for elem in cand_hccs:
-        #         if elem is hcc:
-        #             return elem
-        # return None
-        pass
+        return CurrentHcc.get_by(patient_id, hcc)
 
     def get_snow_meds_for(self, hcc):
         return self.snowmed_converter.from_hcc(hcc)
+
+    def save_hcc_candidate_for(self, patient_id, hcc, snow_meds, notes, status):
+        if snow_meds is not None:
+            snow_meds = [str(x) for x in snow_meds]
+
+        currentHcc = CurrentHcc.get_by(patient_id, hcc)
+        currentHcc.snow_med_codes = snow_meds
+        currentHcc.status = status
+        currentHcc.notes = notes
+        currentHcc.save()
+        return currentHcc

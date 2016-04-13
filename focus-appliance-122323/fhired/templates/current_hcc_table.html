@@ -1,11 +1,12 @@
 {% if data.hccs %}
     {% for entry in data.hccs %}
+        {% set hcc = entry.get_hcc() %}
         <div class="round borders">
             <ul>
-                <li>Code: {{ entry.code }}</li>
-                <li>Name: {{ entry.name }}</li>
-                <li>Date: {{ entry.date }}</li>
-                <li><a data-id="{{ entry.code }}" rel="view" href="#">View</a></li>
+                <li><a data-id="{{ hcc.code }}" rel="view" href="#">View</a></li>
+                <li>Code: {{ hcc.code }}</li>
+                <li>Name: {{ hcc.name }}</li>
+                <li>Date: {{ hcc.date }}</li>
             </ul>
         </div>
     {% endfor %}

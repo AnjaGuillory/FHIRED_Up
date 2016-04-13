@@ -133,21 +133,19 @@ def current_hcc_table():
 @login_required
 @app.route('/add_candidate_hcc', methods=['POST', 'GET'])
 def add_candidate_hcc():
-
     if request.method == "POST":
         patient_id = int(request.form.get("pt_id"))
         hcc = int(request.form.get("hcc"))
         snow_meds = request.form.getlist("snow_med")
         notes = request.form.get("notes")
         status = request.form.get("verification_status")
-        details = fhir_up.add_hcc_candidate_hcc_for(patient_id, hcc, snow_meds, notes, status)
+        details = fhir_up.add_hcc_candidate_for(patient_id, hcc, snow_meds, notes, status)
         return jsonify(db.to_dict(details))
     else:
         patient_id = int(request.args.get('pt_id', ''))
         hcc = int(request.args.get('hcc', ''))
         snow_meds = fhir_up.get_snow_meds_for(hcc)
         return render_template('add_candidate_hcc.html', data={"pt_id": patient_id, "snow_meds": snow_meds})
-
 
 
 @login_required
@@ -160,12 +158,26 @@ def reject_candidate_hcc():
 
 
 @login_required
-@app.route('/view_candidate_hcc', methods=['GET'])
+@app.route('/view_candidate_hcc', methods=['GET', 'POST'])
 def view_candidate_hcc():
-    patient_id = int(request.args.get('pt_id', ''))
-    hcc = request.args.get('hcc', '')
-    return render_template('view_candidate_hcc.html',
-                           data={"pt_id": patient_id, "hcc": fhir_up.view_hcc_candidate_hcc_for(patient_id, hcc)})
+    if request.method == "POST":
+        patient_id = int(request.form.get("pt_id"))
+        hcc = int(request.form.get("hcc"))
+        snow_meds = request.form.getlist("snow_med")
+        notes = request.form.get("notes")
+        status = request.form.get("verification_status")
+        details = fhir_up.save_hcc_candidate_for(patient_id, hcc, snow_meds, notes, status)
+        return jsonify(db.to_dict(details))
+    else:
+        patient_id = int(request.args.get('pt_id', ''))
+        hcc = int(request.args.get('hcc', ''))
+        hcc_detail = fhir_up.view_current_hcc_for(patient_id, hcc)
+        code = hcc_detail.hcc
+        status = hcc_detail.status
+        save_snow_meds = hcc_detail.snow_med_codes
+        snow_meds = fhir_up.get_snow_meds_for(code)
+        return render_template('view_candidate_hcc.html', notes=hcc_detail.notes, pt_id=patient_id, status=status,
+                               save_snow_meds=save_snow_meds, snow_meds=snow_meds, code= code)
 
 
 @login_required

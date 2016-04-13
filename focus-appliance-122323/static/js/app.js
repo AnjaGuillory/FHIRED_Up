@@ -78,7 +78,16 @@ $(document).ready(function(){
         var pt_id = $("#pt_id");
         if(current_hcc.length > 0){
             $.get("/current_hcc_table",{ pt_id : pt_id.val() }, function(response){
-                current_hcc.find("div.content").html(response);
+                current_hcc.find("div.content").html(response).find("li a").click(function(e){
+                    e.preventDefault();
+                    var anchor = $(this);
+                    var id = anchor.attr("data-id");
+                    loadHccFor("view", id, function(success){
+                        if(success){
+
+                        }
+                    });
+                });
             });
         }
     }
@@ -89,17 +98,23 @@ $(document).ready(function(){
             var anchor = $(this);
             var action = anchor.attr("rel");
             var id = anchor.attr("data-id");
-            loadHccFor(action, id);
+            loadHccFor(action, id, function(success){
+                if(success){
+                    anchor.parents("tr").remove();
+                    setUpCurrentHcc();
+                    setUpAnalysis();
+                }
+            });
         });
     }
 
-    function getBehaviorForAction(action, dialog, pt_id, hcc){
+    function getBehaviorForAction(action, dialog, pt_id, hcc, callback){
         var data = dialog.find("form").serializeArray();
         data.push({ name: "pt_id", value : pt_id });
         data.push({ name: "hcc", value : hcc });
         $.post(getPathForAction(action), data, function(){
-            alert("Saved");
             dialog.dialog( "close" );
+            callback(true);
         });
     }
 
@@ -119,16 +134,22 @@ $(document).ready(function(){
         });
     }
 
-    function loadHccFor(action, id){
+    function loadHccFor(action, id, callback){
         var pt_id = $("#pt_id").val();
-        var action_title = action.capitalize();
+        var action_title = action == "view" ? "save" : action.capitalize();
         $.get(getPathForAction(action),{ pt_id : pt_id, hcc: id}, function(response){
             $('#candidate_hcc_dashboard').find(".dialogContainer").html(response);
             setUpAllSnowMeds();
             var buttons = {};
             buttons[action_title] =  function() {
-                getBehaviorForAction(action, $(this), pt_id, id);
+                getBehaviorForAction(action, $(this), pt_id, id, callback);
             };
+            if(action_title == "save"){
+                buttons["delete"] =  function() {
+                    alert("implement me");
+                };
+            }
+
             buttons["Cancel"] = function() {
               $( this ).dialog( "close" );
             };

@@ -103,6 +103,14 @@ ul.snowMedsContainer li{
     list-style: none;
 }
 
+#current_year_hcc ul li{
+    font-size:  13px;
+}
+
+#current_year_hcc ul{
+    margin-top: 10px;
+}
+
 #footer{
     height: 50px;
     position: fixed;

@@ -27,26 +27,6 @@ class Patient:
         # [EncounterID, EncounterServiceYear, [list of [ConditionCode, ConditionName, ConditionCodingSystem]]]
         return self.__diagnoses_list
 
-    def get_risk_score(self):
-        '''Calculates the patient's risk score for the
-           year entered as a parameter'''
-        if self.__risk_score is None:
-            risk_score = 0
-            already_added_hccs = []
-            converter = SnowmedConverter()
-            # basically we loop through the diagnoses, convert them to HCCs and risk scores, and then sum up the risk scores
-            for enc in self.get_diagnoses_list():
-                if enc[1] == get_current_year():
-                    for diag in enc[2]:
-                        HCC = converter.to_hcc(diag[0])
-                        if HCC is not None and HCC[0] not in already_added_hccs:
-                            already_added_hccs.append(HCC[0])  # This makes sure we don't count an HCC more than once
-                            risk_score = risk_score + HCC[2]
-
-            self.__risk_score = risk_score
-
-        return self.__risk_score
-
     @staticmethod
     def init_from_fhir_patient_resource(resource):
         """Initialize a patient object from a FHIR Patient Resource record.

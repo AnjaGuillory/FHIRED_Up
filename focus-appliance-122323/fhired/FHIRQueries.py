@@ -120,7 +120,7 @@ class FHIRQueries:
 
         patients = self.get_patient_for(query)
         for patient in patients:
-            if str(patient.pt_id) == patient_id:
+            if int(patient.pt_id) == patient_id:
                 return patient
 
         return None

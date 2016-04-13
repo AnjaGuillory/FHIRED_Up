@@ -5,7 +5,7 @@ from fhired.SnowmedConverter import SnowmedConverter
 
 class ConverterTests(unittest.TestCase):
     def setUp(self):
-        self.converter = SnowmedConverter()
+        self.converter = SnowmedConverter
 
     def test_convert_snowmed_to_hcc(self):
         hcc = self.converter.to_hcc('151004')
