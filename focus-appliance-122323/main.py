@@ -69,9 +69,8 @@ def login():
         return redirect(request.args.get('next') or url_for('dashboard'))
     return redirect(url_for("index"))
 
-
-@login_required
 @app.route('/patient_lookup', methods=['POST'])
+@login_required
 def patient_lookup():
     fhir_queries = FHIRQueries()
     # TODO: (time permitting) Add support for other search options such as patient gender, dob, city, state
@@ -89,9 +88,8 @@ def patient_lookup():
     # query = {'name': request.form['pt_id']}
     return render_template('patient_lookup.html', data=fhir_queries.get_patient_for(query, 50))
 
-
-@login_required
 @app.route('/analysis_table', methods=['GET'])
+@login_required
 def analysis_table():
     patient_id = int(request.args.get('pt_id', ''))
     year = Entities.get_current_year() - int(request.args.get('years', ''))
@@ -111,9 +109,8 @@ def analysis_table():
     }
     return render_template('analysis_table.html', data=data)
 
-
-@login_required
 @app.route('/candidate_hcc_table', methods=['GET'])
+@login_required
 def candidate_hcc_table():
     patient_id = int(request.args.get('pt_id', ''))
     max_past_years = Entities.get_current_year() - int(request.args.get('years', ''))
@@ -121,17 +118,15 @@ def candidate_hcc_table():
     hccs = fhir_up.get_candidate_hccs_for(patient_id, max_past_years, include_rejected)
     return render_template('candidate_hcc_table.html', data={"pt_id": patient_id, "hccs": hccs})
 
-
-@login_required
 @app.route('/current_hcc_table', methods=['GET'])
+@login_required
 def current_hcc_table():
     patient_id = int(request.args.get('pt_id', ''))
     hccs = fhir_up.get_current_hccs_for(patient_id)
     return render_template('current_hcc_table.html', data={"pt_id": patient_id, "hccs": hccs})
 
-
-@login_required
 @app.route('/add_candidate_hcc', methods=['POST', 'GET'])
+@login_required
 def add_candidate_hcc():
     if request.method == "POST":
         patient_id = int(request.form.get("pt_id"))
@@ -147,18 +142,16 @@ def add_candidate_hcc():
         snow_meds = fhir_up.get_snow_meds_for(hcc)
         return render_template('add_candidate_hcc.html', data={"pt_id": patient_id, "snow_meds": snow_meds})
 
-
-@login_required
 @app.route('/reject_candidate_hcc', methods=['POST', 'GET'])
+@login_required
 def reject_candidate_hcc():
     patient_id = int(request.args.get('pt_id', ''))
     hcc = int(request.args.get('hcc', ''))
     return render_template('reject_candidate_hcc.html',
                            data={"pt_id": patient_id, "hcc": fhir_up.reject_hcc_candidate_hcc_for(patient_id, hcc)})
 
-
-@login_required
 @app.route('/view_candidate_hcc', methods=['GET', 'POST'])
+@login_required
 def view_candidate_hcc():
     if request.method == "POST":
         patient_id = int(request.form.get("pt_id"))
@@ -179,9 +172,8 @@ def view_candidate_hcc():
         return render_template('view_candidate_hcc.html', notes=hcc_detail.notes, pt_id=patient_id, status=status,
                                save_snow_meds=save_snow_meds, snow_meds=snow_meds, code= code)
 
-
-@login_required
 @app.route('/candidate_hcc', methods=['get'])
+@login_required
 def candidate_hcc():
     patient_id = int(request.args.get('pt_id', ''))
     patient = fhir_up.get_patient_by_id(patient_id)
