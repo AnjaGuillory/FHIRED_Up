@@ -1,6 +1,7 @@
 ####April 18
 * For documentation, I'm pulling from the presentations and other screenshots. It's going to be fairly brief. 
 * https://www.healthit.gov/techlab/innovation/connecting-accelerating-fhir-app-ecosystem
+* Ongoing Issues and resolutions
 * Final Pres
    * Daniel presenting with anyone else? I'll make note in the text portion of the submission who presented in which presentation.
    * Research component: I feel we did a thorough job, but please let me know if we should add to it.
