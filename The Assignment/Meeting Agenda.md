@@ -1,3 +1,17 @@
+####April 18
+* For documentation, I'm pulling from the presentations and other screenshots. It's going to be fairly brief. 
+* https://www.healthit.gov/techlab/innovation/connecting-accelerating-fhir-app-ecosystem
+* Final Pres
+   * Daniel presenting with anyone else? I'll make note in the text portion of the submission who presented in which presentation.
+   * Research component: I feel we did a thorough job, but please let me know if we should add to it.
+   * Functionality:
+   * Usability: once issues are resolved, done
+   * Design: I feel is solid
+   * Innovation: they've said it's unique...
+   * Make sure we give an overview of the problem and overview at the beginning. maybe one slide as a refresher.
+   * I will wait to get a zip file of the focus-appliance folder
+
+
 ####March 28, 2016
 * Implement RBAC in last phases of project
     * Roles for system admins, doctors, nurses, coders, and PAs - main difference being only doctors can confirm or deny. admins can adjust and deny but shouldn't
