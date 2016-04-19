@@ -1,13 +1,10 @@
-<div id="view_dialog" class="hcc_dialog" title="View Hcc">
+<div id="{{ action_name }}_dialog" class="hcc_dialog" title="{{ action_name.capitalize() }} Hcc">
     <form class="row">
          <div class="large-6 columns">
              <div class="row">
                  <label for="verification_status">Verification Status</label>
                  <select name="verification_status" id="verification_status">
-                       {% for key, value in dict({"confirm" : "Confirm", "provisional":"Provisional"
-                                                  , "differential" : "Differential", "refuted" : "Refuted" ,
-                                                  "entered_error" : "Entered-in-error",
-                                                  "unknown" : "Unknown" }).iteritems()
+                       {% for key, value in status_list.iteritems()
                        %}
                            {% if key == status %}
                             <option value="{{ key }}" selected="selected"> {{ value }}</option>
