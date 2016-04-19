@@ -24,11 +24,11 @@ class FHIRedUp():
         memcache.add(key, patient)
         return patient
 
-    def get_hccs(self, patient_id, current_year, max_past_years=None):
+    def get_hccs(self, pt_id, current_year, max_past_years=None):
         """
 
         :type max_past_years: int
-        :param patient_id:
+        :param pt_id:
         :param current_year:
         :return:
         """
@@ -41,7 +41,7 @@ class FHIRedUp():
         # [EncounterID, EncounterServiceYear, [list of [ConditionCode, ConditionName, ConditionCodingSystem]]]
 
         # get all the patients encounters and the conditions reported at that encounter
-        encounters = self.queries.get_all_patients_conditions(patient_id)
+        encounters = self.queries.get_all_patients_conditions(pt_id)
 
         # Loop over all the encounters
         for Enc in encounters:
@@ -75,12 +75,12 @@ class FHIRedUp():
                 missing_hccs.append(x)
         return missing_hccs
 
-    def find_missing_diagnoses_by_patient_id(self, patient_id, current_year):
+    def find_missing_diagnoses_by_patient_id(self, pt_id, current_year):
         """This is the most important piece of code - it take a patient number and year, and
             returns all of that patients missing diagnoses
             :param current_year:
             :param patient_id: """
-        current_year_hccs, history_hccs = self.get_hccs(patient_id, current_year)
+        current_year_hccs, history_hccs = self.get_hccs(pt_id, current_year)
         return self.find_missing_diagnoses(current_year_hccs, history_hccs)
 
     def add_diagnosis_to_current(self, missing_diagnoses, current_year_hccs, *hccs):
@@ -110,10 +110,10 @@ class FHIRedUp():
                     break
         return current_year_hccs
 
-    def add_patient_to_provider(self, patient_id, current_year):  # we don't have providers yet.
+    def add_patient_to_provider(self, pt_id, current_year):  # we don't have providers yet.
         # """Adds a patient to the list of patients under the provider's care"""
         # patient = self.queries.get_patient_by_id(patient_id)
-        # patient_info = Entities.Patient(patient_id, patient.name, patient.dob, patient.gender, patient.address, current_year)
+        # patient_info = Entities.Patient(pt_id, patient.name, patient.dob, patient.gender, patient.address, current_year)
         # self.list_of_patients.append(patient_info)
         pass
 
@@ -125,11 +125,11 @@ class FHIRedUp():
 
         return risk_score
 
-    def get_candidate_risk_score_for_pt(self, patient_id, include_selected, current_year):
+    def get_candidate_risk_score_for_pt(self, pt_id, include_selected, current_year):
         # Risk score for the patient's current year
         look_up = LookupTables()
         risk_value = 0
-        current_year_hccs, history_hccs = self.get_hccs(patient_id, current_year)
+        current_year_hccs, history_hccs = self.get_hccs(pt_id, current_year)
 
         for hcc_by_time in current_year_hccs:
             risk_value += look_up.hcc_to_risk_score_value(hcc_by_time)
@@ -140,8 +140,8 @@ class FHIRedUp():
             risk_value = risk_value + sum(look_up.hcc_to_risk_score_value(missing_diag))
         return risk_value
 
-    def risks_scores_distribution(self, patient_id, include_selected):
-        hccs = self.get_current_hccs_for(patient_id)
+    def risks_scores_distribution(self, pt_id, include_selected):
+        hccs = self.get_current_hccs_for(pt_id)
         score_lists = list()
         for hcc_details in hccs:
             hcc = hcc_details.get_hcc()
@@ -152,8 +152,8 @@ class FHIRedUp():
 
         return score_lists
 
-    def risks_scores_list(self, patient_id, include_selected):
-        hccs = self.get_current_hccs_for(patient_id)
+    def risks_scores_list(self, pt_id, include_selected):
+        hccs = self.get_current_hccs_for(pt_id)
         score_lists = list()
         for hcc_details in hccs:
             hcc = hcc_details.get_hcc()
@@ -164,86 +164,57 @@ class FHIRedUp():
 
         return score_lists
 
-    def set_current_year_hccs_for(self, patient_id):
-        current_year = Entities.get_current_year()
-        current_year_hccs, _ = self.get_hccs(patient_id, current_year)
-        for hcc in current_year_hccs:
-            snow_meds = self.get_snow_meds_for(hcc.code)
-            self.add_hcc_candidate_for(patient_id, hcc.code, snow_meds, "", "confirm")
+    def set_current_year_hccs_for(self, pt_id):
+        if not CurrentHcc.exits(pt_id, None):
+            current_year = Entities.get_current_year()
+            current_year_hccs, _ = self.get_hccs(pt_id, current_year)
+            for hcc in current_year_hccs:
+                snow_meds = self.get_snow_meds_for(hcc.code)
+                self.add_hcc_candidate_for(pt_id, hcc.code, snow_meds, "", "confirm")
 
     def get_current_hccs_for(self, patient_id):
         self.set_current_year_hccs_for(patient_id) # check if the new pt is missing hcc and adds it
         return CurrentHcc.get_all_by("pt_id", patient_id)
 
-    # Candidate = History for now, waiting on spiro
-    def get_candidate_hccs_for(self, patient_id, max_past_years, include_rejected):
+    def get_candidate_hccs_for(self, pt_id, max_past_years, include_rejected):
         current_year = Entities.get_current_year()
-        _, history_hccs = self.get_hccs(patient_id, current_year, max_past_years)
+        _, history_hccs = self.get_hccs(pt_id, current_year, max_past_years)
         return history_hccs
 
-    def add_hcc_candidate_for(self, patient_id, hcc, snow_meds, notes, status):
+
+    def add_hcc_candidate_for(self, pt_id, hcc, snow_meds, notes, status):
         """ Add candidate hcc to patient list of hccs """
-        if snow_meds is not None:
-            snow_meds = [str(x) for x in snow_meds]
-
-        if not CurrentHcc.exits(patient_id, hcc):
-            currentHcc = CurrentHcc(pt_id=patient_id,
+        if not CurrentHcc.exits(pt_id, hcc):
+            if snow_meds is not None:
+                snow_meds = [str(x) for x in snow_meds]
+            currentHcc = CurrentHcc(pt_id=pt_id,
                                     hcc=hcc, status=status,
                                     snowMedCodes=snow_meds, notes=notes)
             currentHcc.put()
-            assert(currentHcc.get() != None)
             return currentHcc
-        return None
+        return False
 
-    def reject_hcc_candidate_hcc_for(self, patient_id, hcc):
-        """ Remove candidate hcc from patient candidate hcc list"""
-        if snow_meds is not None:
-            snow_meds = [str(x) for x in snow_meds]
+    def delete_hcc_for(self, pt_id, hcc):
+        if CurrentHcc.exits(pt_id, hcc):
+            return CurrentHcc.delete_by(pt_id, hcc)
 
-        if not CurrentHcc.exits(patient_id, hcc):
-            currentHcc = CurrentHcc(pt_id=patient_id,
-                                    hcc=hcc, status=status,
-                                    snowMedCodes=snow_meds, notes=notes)
-            currentHcc.put()
-            assert(currentHcc.get() != None)
-            return currentHcc
-        return None
+        return False
 
-    def delete_hcc_candidate_hcc_for(self, patient_id, hcc):
-        if snow_meds is not None:
-            snow_meds = [str(x) for x in snow_meds]
-
-        if not CurrentHcc.exits(patient_id, hcc):
-            currentHcc = CurrentHcc(pt_id=patient_id,
-                                    hcc=hcc, status=status,
-                                    snowMedCodes=snow_meds, notes=notes)
-        currentHcc.delete()
-        assert(currentHcc.get() == None)
-        return None
-    
-    def view_current_hcc_for(self, patient_id, hcc):
-        """ View a specific hcc within the patient candidate hcc list"""
-        return CurrentHcc.get_by(patient_id, hcc)
-
-    def view_current_hcc_for_wrapper(self, patient_id, hcc, status):
-        curr_hcc = view_current_hcc_for(patient_id, hcc)
-        if status == add:
-            add_hcc_candidate_for(patient_id,hcc,curr_hcc.snowMedCodes,curr_hcc.notes,status)
-        elif status == reject:
-            reject_hcc_candidate_for(patient_id,hcc,curr_hcc.snowMedCodes,curr_hcc.notes,status)
-        elif status == delete:
-            delete_hcc_candidate_hcc_for(patient_id,hcc,curr_hcc.snowMedCodes,curr_hcc.notes,status)
+    def view_current_hcc_for(self, pt_id, hcc):
+        if CurrentHcc.exits(pt_id, hcc):
+            return CurrentHcc.get_by(pt_id, hcc)
         else:
-            return None
+            return CurrentHcc.empty(pt_id, hcc, [str(x) for x in self.get_snow_meds_for(hcc)])
+
 
     def get_snow_meds_for(self, hcc):
         return self.snowmed_converter.from_hcc(hcc)
 
-    def save_hcc_candidate_for(self, patient_id, hcc, snow_meds, notes, status):
+    def save_hcc_candidate_for(self, pt_id, hcc, snow_meds, notes, status):
         if snow_meds is not None:
             snow_meds = [str(x) for x in snow_meds]
 
-        currentHcc = CurrentHcc.get_by(patient_id, hcc)
+        currentHcc = CurrentHcc.get_by(pt_id, hcc)
         currentHcc.snow_med_codes = snow_meds
         currentHcc.status = status
         currentHcc.notes = notes

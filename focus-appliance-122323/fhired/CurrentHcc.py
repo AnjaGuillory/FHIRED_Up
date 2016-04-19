@@ -15,24 +15,45 @@ class CurrentHcc(db.Model):
         return Hcc(self.hcc, self.created.year, hcc_details[1], hcc_details[2], self.notes)
 
     @classmethod
+    def empty(cls, pt_id, hcc, snow_med_codes):
+        return CurrentHcc(pt_id=pt_id, hcc=hcc, snow_med_codes=snow_med_codes, status="confirm")
+
+    @classmethod
     def get_all_by(cls, attr, value):
         q = CurrentHcc.all()
         q.filter(attr+" =", value)
         return q.fetch(1000)
 
     @classmethod
-    def exits(cls, patient_id, hcc):
+    def exits(cls, pt_id, hcc):
         q = CurrentHcc.all()
-        q.filter("pt_id =", patient_id)
-        q.filter("hcc =", hcc)
-        if q.count() > 0:
+        q.filter("pt_id =", pt_id)
+
+        if hcc is not None:
+            q.filter("hcc =", hcc)
+
+        total = q.count()
+        if total > 0:
             return True
         return False
 
     @classmethod
-    def get_by(cls, patient_id, hcc):
+    def get_by(cls, pt_id, hcc):
         q = CurrentHcc.all()
-        q.filter("pt_id =", patient_id)
+        q.filter("pt_id =", pt_id)
         q.filter("hcc =", hcc)
         return q.get()
+
+    @classmethod
+    def delete_by(cls, pt_id, hcc):
+        success = False
+        q = CurrentHcc.all()
+        q.filter("pt_id =", pt_id)
+        q.filter("hcc =", hcc)
+
+        for obj in q.fetch(1000):
+            success = obj.delete()
+        return success
+
+
 

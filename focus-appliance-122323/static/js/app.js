@@ -1,6 +1,6 @@
 String.prototype.capitalize = function() {
     return this.charAt(0).toUpperCase() + this.slice(1);
-}
+};
 
 $(document).ready(function(){
     $("#loginButton").click(function(){
@@ -17,18 +17,18 @@ $(document).ready(function(){
                 var year_text = ui.value > 1 ? ui.value+" years" : ui.value+" year";
                 $( "span#years-value" ).html(year_text);
                 loadCandidateHcc(ui.value, includeRejectedHcc());
-                loadAnalysis(ui.value, includeSelectedHcc());
+                loadAnalysisFor(ui.value, includeSelectedHcc());
             }
         });
     }
 
-    function setUpAnalysis(){
+    function loadAnalysis(){
         if($("#analysis").length > 0){
-            loadAnalysis($("#yearSlider").slider("value"), includeSelectedHcc());
+            loadAnalysisFor($("#yearSlider").slider("value"), includeSelectedHcc());
         }
     }
 
-    function loadAnalysis(years, include_selected){
+    function loadAnalysisFor(years, include_selected){
         $.get("/analysis_table",{ pt_id : $("#pt_id").val(), include_selected : include_selected, years: years }, function(response){
                 $("#analysis").find("div.content").html(response);
                 var table = $('#analysis_table');
@@ -42,8 +42,13 @@ $(document).ready(function(){
             loadCandidateHcc($("#yearSlider").slider("value"), includeRejectedHcc());
         });
         $("#include_selected_hccs").change(function(){
-             loadAnalysis($("#yearSlider").slider("value"), includeSelectedHcc());
+             loadAnalysisFor($("#yearSlider").slider("value"), includeSelectedHcc());
         });
+    }
+    
+    function reload() {
+        loadCurrentHcc();
+        loadAnalysis();
     }
 
     function includeRejectedHcc(){
@@ -73,7 +78,7 @@ $(document).ready(function(){
         }
     }
 
-    function setUpCurrentHcc(){
+    function loadCurrentHcc(){
         var current_hcc = $("#current_year_hcc");
         var pt_id = $("#pt_id");
         if(current_hcc.length > 0){
@@ -82,10 +87,8 @@ $(document).ready(function(){
                     e.preventDefault();
                     var anchor = $(this);
                     var id = anchor.attr("data-id");
-                    loadHccFor("view", id, function(success){
-                        if(success){
+                    loadHccFor("view", id, function(result){
 
-                        }
                     });
                 });
             });
@@ -98,11 +101,12 @@ $(document).ready(function(){
             var anchor = $(this);
             var action = anchor.attr("rel");
             var id = anchor.attr("data-id");
-            loadHccFor(action, id, function(success){
-                if(success){
+            loadHccFor(action, id, function(result){
+                if(result.success){
                     anchor.parents("tr").remove();
-                    setUpCurrentHcc();
-                    setUpAnalysis();
+                    reload();
+                }else{
+                    alert("The '"+action+"' action could not be completed, must likely already exist");
                 }
             });
         });
@@ -112,14 +116,14 @@ $(document).ready(function(){
         var data = dialog.find("form").serializeArray();
         data.push({ name: "pt_id", value : pt_id });
         data.push({ name: "hcc", value : hcc });
-        $.post(getPathForAction(action), data, function(){
+        $.post(getPathForAction(action), data, function(result){
             dialog.dialog( "close" );
-            callback(true);
+            callback(result);
         });
     }
 
     function getPathForAction(action){
-        return "/"+action+"_candidate_hcc";
+        return "/"+action+"_hcc";
     }
 
     function setUpAllSnowMeds(){
@@ -137,6 +141,7 @@ $(document).ready(function(){
     function loadHccFor(action, id, callback){
         var pt_id = $("#pt_id").val();
         var action_title = action == "view" ? "save" : action.capitalize();
+        var delete_action = "delete";
         $.get(getPathForAction(action),{ pt_id : pt_id, hcc: id}, function(response){
             $('#candidate_hcc_dashboard').find(".dialogContainer").html(response);
             setUpAllSnowMeds();
@@ -145,8 +150,12 @@ $(document).ready(function(){
                 getBehaviorForAction(action, $(this), pt_id, id, callback);
             };
             if(action_title == "save"){
-                buttons["delete"] =  function() {
-                    alert("implement me");
+                buttons[delete_action] =  function() {
+                    if (confirm("Are you sure ?")) {
+                         getBehaviorForAction(delete_action, $(this), pt_id, id, function () {
+                            reload();
+                         });
+                    }
                 };
             }
 
@@ -183,10 +192,10 @@ $(document).ready(function(){
     $(document).foundation();
     setUpYearSlider();
     setUpCandidateHcc();
-    setUpCurrentHcc();
-    setUpAnalysis();
+
     setUpCheckBoxes();
     setUpRiskMeter("#risk_meter");
+    reload();
 });
 
 
