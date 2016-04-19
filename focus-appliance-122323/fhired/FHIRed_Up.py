@@ -191,18 +191,50 @@ class FHIRedUp():
                                     hcc=hcc, status=status,
                                     snowMedCodes=snow_meds, notes=notes)
             currentHcc.put()
+            assert(currentHcc.get() != None)
             return currentHcc
         return None
 
     def reject_hcc_candidate_hcc_for(self, patient_id, hcc):
         """ Remove candidate hcc from patient candidate hcc list"""
-        # patient = self.queries.get_patient_by_id(patient_id)
-        # patient.list_of_diag.remove(hcc)
-        pass
+        if snow_meds is not None:
+            snow_meds = [str(x) for x in snow_meds]
 
+        if not CurrentHcc.exits(patient_id, hcc):
+            currentHcc = CurrentHcc(pt_id=patient_id,
+                                    hcc=hcc, status=status,
+                                    snowMedCodes=snow_meds, notes=notes)
+            currentHcc.put()
+            assert(currentHcc.get() != None)
+            return currentHcc
+        return None
+
+    def delete_hcc_candidate_hcc_for(self, patient_id, hcc):
+        if snow_meds is not None:
+            snow_meds = [str(x) for x in snow_meds]
+
+        if not CurrentHcc.exits(patient_id, hcc):
+            currentHcc = CurrentHcc(pt_id=patient_id,
+                                    hcc=hcc, status=status,
+                                    snowMedCodes=snow_meds, notes=notes)
+        currentHcc.delete()
+        assert(currentHcc.get() == None)
+        return None
+    
     def view_current_hcc_for(self, patient_id, hcc):
         """ View a specific hcc within the patient candidate hcc list"""
         return CurrentHcc.get_by(patient_id, hcc)
+
+    def view_current_hcc_for_wrapper(self, patient_id, hcc, status):
+        curr_hcc = view_current_hcc_for(patient_id, hcc)
+        if status == add:
+            add_hcc_candidate_for(patient_id,hcc,curr_hcc.snowMedCodes,curr_hcc.notes,status)
+        elif status == reject:
+            reject_hcc_candidate_for(patient_id,hcc,curr_hcc.snowMedCodes,curr_hcc.notes,status)
+        elif status == delete:
+            delete_hcc_candidate_hcc_for(patient_id,hcc,curr_hcc.snowMedCodes,curr_hcc.notes,status)
+        else:
+            return None
 
     def get_snow_meds_for(self, hcc):
         return self.snowmed_converter.from_hcc(hcc)
