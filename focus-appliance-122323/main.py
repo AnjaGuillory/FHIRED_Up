@@ -130,11 +130,13 @@ def patient_lookup():
 def analysis_table():
     pt_id = int(request.args.get('pt_id', ''))
     year = Entities.get_current_year() - int(request.args.get('years', ''))
-    include_selected = request.args.get('include_selected', '') == "true"
-    score_lists = fhir_up.risks_scores_list(pt_id, include_selected)
+    # include_selected = request.args.get('include_selected', '') == "true"
+    include_selected = True
+    include_rejected = request.args.get('include_rejected', '') == "true"
+    score_lists = fhir_up.risks_scores_list(pt_id, include_rejected)
 
-    current_risk_score = fhir_up.get_current_risk_score_for_pt(pt_id)
-    score_distribution = fhir_up.risks_scores_distribution(pt_id, include_selected)
+    current_risk_score = fhir_up.get_current_risk_score_for_pt(pt_id, include_rejected)
+    score_distribution = fhir_up.risks_scores_distribution(pt_id, include_rejected)
     candidate_risk_score = fhir_up.get_candidate_risk_score_for_pt(pt_id, include_selected, year)
 
     bar_categories, bar_values = utils.get_categories_for_risks(score_lists)
@@ -161,7 +163,7 @@ def candidate_hcc_table():
 @login_required
 def current_hcc_table():
     pt_id = int(request.args.get('pt_id', ''))
-    hccs = fhir_up.get_current_hccs_for(pt_id)
+    hccs = fhir_up.get_current_hccs_for(pt_id, False)
     return render_template('current_hcc_table.html', data={"pt_id": pt_id, "hccs": hccs})
 
 
@@ -206,7 +208,7 @@ def view_hcc():
 def candidate_hcc():
     pt_id = int(request.args.get('pt_id', ''))
     patient = fhir_up.get_patient_by_id(pt_id)
-    risk_score = fhir_up.get_current_risk_score_for_pt(pt_id)
+    risk_score = fhir_up.get_current_risk_score_for_pt(pt_id, False)
     risk_meter = min(risk_score * 30, 100)
     current_year = Entities.get_current_year()
 

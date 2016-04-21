@@ -19,9 +19,12 @@ class CurrentHcc(db.Model):
         return CurrentHcc(pt_id=pt_id, hcc=hcc, snow_med_codes=snow_med_codes, status="confirm")
 
     @classmethod
-    def get_all_by(cls, attr, value):
+    def get_all_by(cls, attr, value, include_rejected):
         q = CurrentHcc.all()
         q.filter(attr+" =", value)
+        if not include_rejected:
+            q.filter("status =", "confirm")
+
         return q.fetch(1000)
 
     @classmethod

@@ -117,9 +117,9 @@ class FHIRedUp():
         # self.list_of_patients.append(patient_info)
         pass
 
-    def get_current_risk_score_for_pt(self, pt_id):
+    def get_current_risk_score_for_pt(self, pt_id, include_rejected):
         risk_score = 0
-        current_hccs = self.get_current_hccs_for(pt_id)
+        current_hccs = self.get_current_hccs_for(pt_id, include_rejected)
         for current_hcc in current_hccs:
             risk_score += current_hcc.get_hcc().risk_score
 
@@ -137,30 +137,27 @@ class FHIRedUp():
         if include_selected:
             # add on the value for the "missing" HCCs
             missing_diag = self.find_missing_diagnoses(current_year_hccs, history_hccs)
-            risk_value = risk_value + sum(look_up.hcc_to_risk_score_value(missing_diag))
+            for missing in missing_diag:
+                missing_risk = look_up.hcc_to_risk_score_value(missing)
+                risk_value = risk_value + missing_risk
+
         return risk_value
 
-    def risks_scores_distribution(self, pt_id, include_selected):
-        hccs = self.get_current_hccs_for(pt_id)
+    def risks_scores_distribution(self, pt_id, include_rejected):
+        hccs = self.get_current_hccs_for(pt_id, include_rejected)
         score_lists = list()
         for hcc_details in hccs:
             hcc = hcc_details.get_hcc()
             score_lists.append(Entities.RiskDistribution(hcc.name, hcc.risk_score).for_chart())
 
-        if include_selected:  # testing_params
-            pass
-
         return score_lists
 
-    def risks_scores_list(self, pt_id, include_selected):
-        hccs = self.get_current_hccs_for(pt_id)
+    def risks_scores_list(self, pt_id, include_rejected):
+        hccs = self.get_current_hccs_for(pt_id, include_rejected)
         score_lists = list()
         for hcc_details in hccs:
             hcc = hcc_details.get_hcc()
             score_lists.append(Entities.RiskDistribution(hcc.name, hcc.risk_score))
-
-        if include_selected:  # testing_params
-            pass
 
         return score_lists
 
@@ -172,27 +169,36 @@ class FHIRedUp():
                 snow_meds = self.get_snow_meds_for(hcc.code)
                 self.add_hcc_candidate_for(pt_id, hcc.code, snow_meds, "", "confirm")
 
-    def get_current_hccs_for(self, patient_id):
+    def get_current_hccs_for(self, patient_id, include_rejected):
         self.set_current_year_hccs_for(patient_id) # check if the new pt is missing hcc and adds it
-        return CurrentHcc.get_all_by("pt_id", patient_id)
+        return CurrentHcc.get_all_by("pt_id", patient_id, include_rejected)
 
     def get_candidate_hccs_for(self, pt_id, max_past_years, include_rejected):
         current_year = Entities.get_current_year()
-        _, history_hccs = self.get_hccs(pt_id, current_year, max_past_years)
-        return history_hccs
+        store_current_year_hccs = [x.hcc for x in self.get_current_hccs_for(pt_id, not include_rejected)]
+        current_year_hccs, historic_hccs = self.get_hccs(pt_id, current_year, max_past_years)
+        hccs = list()
+
+        for hcc in current_year_hccs+historic_hccs:
+            if hcc.code not in store_current_year_hccs:
+                hccs.append(hcc)
+
+        return hccs
 
 
     def add_hcc_candidate_for(self, pt_id, hcc, snow_meds, notes, status):
         """ Add candidate hcc to patient list of hccs """
-        if not CurrentHcc.exits(pt_id, hcc):
-            if snow_meds is not None:
-                snow_meds = [str(x) for x in snow_meds]
-            currentHcc = CurrentHcc(pt_id=pt_id,
-                                    hcc=hcc, status=status,
-                                    snowMedCodes=snow_meds, notes=notes)
-            currentHcc.put()
-            return currentHcc
-        return False
+
+        if CurrentHcc.exits(pt_id, hcc):
+            self.delete_hcc_for(pt_id, hcc)
+
+        if snow_meds is not None:
+            snow_meds = [str(x) for x in snow_meds]
+        currentHcc = CurrentHcc(pt_id=pt_id,
+                                hcc=hcc, status=status,
+                                snowMedCodes=snow_meds, notes=notes)
+        currentHcc.put()
+        return currentHcc
 
     def delete_hcc_for(self, pt_id, hcc):
         if CurrentHcc.exits(pt_id, hcc):

@@ -17,19 +17,19 @@ $(document).ready(function(){
                 var year_text = ui.value > 1 ? ui.value+" years" : ui.value+" year";
                 $( "span#years-value" ).html(year_text);
                 loadCandidateHcc(ui.value, includeRejectedHcc());
-                loadAnalysisFor(ui.value, includeSelectedHcc());
+                loadAnalysisFor(ui.value, includeSelectedHcc(), includeRejectedHcc());
             }
         });
     }
 
     function loadAnalysis(){
         if($("#analysis").length > 0){
-            loadAnalysisFor($("#yearSlider").slider("value"), includeSelectedHcc());
+            loadAnalysisFor($("#yearSlider").slider("value"), includeSelectedHcc(), includeRejectedHcc());
         }
     }
 
-    function loadAnalysisFor(years, include_selected){
-        $.get("/analysis_table",{ pt_id : $("#pt_id").val(), include_selected : include_selected, years: years }, function(response){
+    function loadAnalysisFor(years, include_selected, include_rejected){
+        $.get("/analysis_table",{ pt_id : $("#pt_id").val(), include_selected : include_selected, include_rejected: include_rejected, years: years }, function(response){
                 $("#analysis").find("div.content").html(response);
                 var table = $('#analysis_table');
                 setUpPieChart(table.find('div.piechart'), pie_chart_data);
@@ -40,9 +40,10 @@ $(document).ready(function(){
     function setUpCheckBoxes() {
         $("#include_rejected_hccs").change(function(){
             loadCandidateHcc($("#yearSlider").slider("value"), includeRejectedHcc());
+             loadAnalysis();
         });
         $("#include_selected_hccs").change(function(){
-             loadAnalysisFor($("#yearSlider").slider("value"), includeSelectedHcc());
+              loadAnalysis();
         });
     }
     
@@ -66,7 +67,7 @@ $(document).ready(function(){
             include_rejected : include_rejected
         }, function(response){
                 $("#candidate_hcc").find("div.content").html(response);
-                $('#candidate_hcc_table').DataTable({ "sDom": '<"top">rt<"bottom"lp><"clear">'});
+                $('#candidate_hcc_table').DataTable({ "sDom": '<"top">rt<"bottom"lp><"clear">', "order": [[ 1, "asc" ]]});
                 setUpCandidateHccEvents();
         });
     }
@@ -88,7 +89,7 @@ $(document).ready(function(){
                     var anchor = $(this);
                     var id = anchor.attr("data-id");
                     loadHccFor("view", id, function(result){
-
+                        reload();
                     });
                 });
             });

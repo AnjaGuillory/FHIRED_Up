@@ -1,9 +1,10 @@
 ﻿from SnowmedConverter import SnowmedConverter
 from fhired.FHIRQueries import *
+from datetime import date
 
 
 def get_current_year():
-    return 2014  # there is no data for 2016
+    return date.today().year  # there is no data for 2016
 
 
 class Patient:
