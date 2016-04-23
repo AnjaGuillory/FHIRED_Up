@@ -1,12 +1,12 @@
 ﻿import json
-import urllib2
 import urllib
-from datetime import datetime, date
+import urllib2
 
 from google.appengine.api import memcache
 
 import Entities
-import Settings
+from fhired import Settings
+
 
 # Basic Process Flow
 #
