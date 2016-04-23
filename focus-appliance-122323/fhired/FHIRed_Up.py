@@ -125,39 +125,52 @@ class FHIRedUp():
 
         return risk_score
 
-    def get_candidate_risk_score_for_pt(self, pt_id, include_selected, current_year):
+    def get_candidate_risk_score_for_pt(self, pt_id, include_rejected, year):
         # Risk score for the patient's current year
-        look_up = LookupTables()
+        # look_up = LookupTables()
+        # risk_value = 0
+        # current_year_hccs, history_hccs = self.get_hccs(pt_id, current_year)
+        #
+        # for hcc_by_time in current_year_hccs:
+        #     risk_value += look_up.hcc_to_risk_score_value(hcc_by_time)
+        #
+        # if include_selected:
+        #     # add on the value for the "missing" HCCs
+        #     missing_diag = self.find_missing_diagnoses(current_year_hccs, history_hccs)
+        #     for missing in missing_diag:
+        #         missing_risk = look_up.hcc_to_risk_score_value(missing)
+        #         risk_value = risk_value + missing_risk
         risk_value = 0
-        current_year_hccs, history_hccs = self.get_hccs(pt_id, current_year)
-
-        for hcc_by_time in current_year_hccs:
-            risk_value += look_up.hcc_to_risk_score_value(hcc_by_time)
-
-        if include_selected:
-            # add on the value for the "missing" HCCs
-            missing_diag = self.find_missing_diagnoses(current_year_hccs, history_hccs)
-            for missing in missing_diag:
-                missing_risk = look_up.hcc_to_risk_score_value(missing)
-                risk_value = risk_value + missing_risk
+        for hcc in self.get_candidate_hccs_for(pt_id, year, include_rejected):
+            risk_value += hcc.risk_score
 
         return risk_value
 
-    def risks_scores_distribution(self, pt_id, include_rejected):
+    def risks_scores_distribution(self, pt_id, year, include_rejected, include_candidate):
         hccs = self.get_current_hccs_for(pt_id, include_rejected)
         score_lists = list()
         for hcc_details in hccs:
             hcc = hcc_details.get_hcc()
             score_lists.append(Entities.RiskDistribution(hcc.name, hcc.risk_score).for_chart())
 
+        if include_candidate:
+            candidate_hccs = self.get_candidate_hccs_for(pt_id, year, include_rejected)
+            for candidate_hcc in candidate_hccs:
+                score_lists.append(Entities.RiskDistribution(candidate_hcc.name, candidate_hcc.risk_score).for_chart())
+
         return score_lists
 
-    def risks_scores_list(self, pt_id, include_rejected):
+    def risks_scores_list(self, pt_id, year, include_rejected, include_candidate):
         hccs = self.get_current_hccs_for(pt_id, include_rejected)
         score_lists = list()
         for hcc_details in hccs:
             hcc = hcc_details.get_hcc()
             score_lists.append(Entities.RiskDistribution(hcc.name, hcc.risk_score))
+
+        if include_candidate:
+            candidate_hccs = self.get_candidate_hccs_for(pt_id, year, include_rejected)
+            for candidate_hcc in candidate_hccs:
+                score_lists.append(Entities.RiskDistribution(candidate_hcc.name, candidate_hcc.risk_score))
 
         return score_lists
 
@@ -194,9 +207,10 @@ class FHIRedUp():
 
         if snow_meds is not None:
             snow_meds = [str(x) for x in snow_meds]
+
         currentHcc = CurrentHcc(pt_id=pt_id,
                                 hcc=hcc, status=status,
-                                snowMedCodes=snow_meds, notes=notes)
+                                snow_med_codes=snow_meds, notes=notes)
         currentHcc.put()
         return currentHcc
 

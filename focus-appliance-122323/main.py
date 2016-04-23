@@ -130,14 +130,15 @@ def patient_lookup():
 def analysis_table():
     pt_id = int(request.args.get('pt_id', ''))
     year = Entities.get_current_year() - int(request.args.get('years', ''))
-    # include_selected = request.args.get('include_selected', '') == "true"
-    include_selected = True
+    include_candidate = request.args.get('include_selected', '') == "true"
     include_rejected = request.args.get('include_rejected', '') == "true"
-    score_lists = fhir_up.risks_scores_list(pt_id, include_rejected)
+    score_lists = fhir_up.risks_scores_list(pt_id, year, include_rejected, include_candidate)
+    score_distribution = fhir_up.risks_scores_distribution(pt_id, year, include_rejected, include_candidate)
 
     current_risk_score = fhir_up.get_current_risk_score_for_pt(pt_id, include_rejected)
-    score_distribution = fhir_up.risks_scores_distribution(pt_id, include_rejected)
-    candidate_risk_score = fhir_up.get_candidate_risk_score_for_pt(pt_id, include_selected, year)
+    candidate_risk_score = fhir_up.get_candidate_risk_score_for_pt(pt_id, include_rejected, year)
+    risk_score = fhir_up.get_current_risk_score_for_pt(pt_id, include_rejected)
+    risk_meter = min(((1 - (risk_score / (candidate_risk_score + risk_score))) * 100), 100)
 
     bar_categories, bar_values = utils.get_categories_for_risks(score_lists)
     data = {
@@ -146,7 +147,7 @@ def analysis_table():
         'pie_chart_data': score_distribution,
         'bar_chart_data': {"categories": bar_categories, "values": bar_values}
     }
-    return render_template('analysis_table.html', data=data)
+    return render_template('analysis_table.html', data=data, risk_meter=risk_meter)
 
 
 @app.route('/candidate_hcc_table', methods=['GET'])
@@ -209,11 +210,10 @@ def candidate_hcc():
     pt_id = int(request.args.get('pt_id', ''))
     patient = fhir_up.get_patient_by_id(pt_id)
     risk_score = fhir_up.get_current_risk_score_for_pt(pt_id, False)
-    risk_meter = min(risk_score * 30, 100)
     current_year = Entities.get_current_year()
 
     if patient is not None:
-        return render_template('candidate_hcc.html', patient=patient, risk_meter=risk_meter, risk_score=risk_score,
+        return render_template('candidate_hcc.html', patient=patient, risk_score=risk_score,
                                current_year=current_year)
     return render_template('404.html'), 404
 
