@@ -6,7 +6,7 @@ from datetime import datetime, date
 from google.appengine.api import memcache
 
 import Entities
-
+import Settings
 
 # Basic Process Flow
 #
@@ -26,7 +26,7 @@ class FHIRQueries:
         if cached_result is not None:
             return cached_result
         remote_result = json.load(urllib2.urlopen(request))
-        memcache.add(request, remote_result)
+        memcache.add(request, remote_result, time=Settings.CACHE_LIFE)
         return remote_result
 
     # # # These are the get queries I use to access the GaTech FHIR server
