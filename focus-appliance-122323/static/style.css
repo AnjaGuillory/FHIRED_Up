@@ -1,6 +1,34 @@
 .sub-nav {
   background-color: #f2f2f2;
   padding: 0.5rem 0.5rem 0.5rem 0;
+  width:100%;
+  margin-bottom:0px;
+  height:55px
+}
+.sub-nav-menu
+{
+    width:30%;
+    padding:7px;
+    font-size:0.8em;
+}
+.menu-left
+{
+    float:left;
+    text-align:left;
+}
+.menu-right
+{
+    float:right;
+    text-align:right;
+}
+.menu-banner-title
+{
+    padding-top:0rem;
+    font-size:1.5em;
+    font-weight:bold;
+    width:40%;
+    float:left;
+    text-align:center;
 }
 
 .sub-nav li {
@@ -58,6 +86,10 @@
 
 #candidate_hcc_dashboard.row, #candidate_hcc_dashboard .row{
     max-width: 114rem;
+}
+#candidate_hcc_table
+{
+    font-size:13px;
 }
 
 #analysis, #candidate_hcc, #current_year_hcc{
@@ -123,5 +155,16 @@ ul.snowMedsContainer li{
     color: #aaa;
     text-align: center;
     width: 100%;
+    font-size:0.8em;
 }
 
+.addViewReject
+{
+}
+
+.addViewReject:hover
+{
+    background:#f6f79e;
+    color:#187abe;
+    text-decoration:underline;
+}

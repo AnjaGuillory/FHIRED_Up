@@ -5,9 +5,9 @@
   <style type="text/css">
     .important { color: #336699; }
   </style>
-
-    {% endblock %}
-    {% block content %}
+{% endblock %}
+{% block bannerTitle %}Patient Lookup{% endblock %}
+{% block content %}
 <script type="text/javascript">
 
     $(document).keypress(function (event) {
@@ -18,17 +18,22 @@
     });
 
     $(document).ready(function () {
-        $("#pt_id").focus();
+        setDefaultFocus();
     });
+
+    function setDefaultFocus()
+    {
+        $("#pt_id").focus();
+    }
+
 </script>
     <div id="dashboard" class="row">
         <div class="separator"></div>
-        <h4 class="text-center">Patient Lookup</h4>
           <div class="large-12 columns">
-            <div class="callout large">
-                <h4>RADV - Risk Adjustment Data Validation Tool</h4>
+            <div class="callout large" style="padding-top:15px;">
+                <h5>RADV - Risk Adjustment Data Validation Tool</h5>
                 <hr/>
-                <h5>Home</h5>
+                <h6>Home</h6>
                 <br/>
                 <div class="large-2 columns">
                     <h5>Find Patient</h5>
@@ -37,11 +42,11 @@
                     <input id="pt_id" type="text" placeholder="Enter Patient Name or ID" />
 
                     <input type="submit" style="display:none; visibility:hidden;" />
-                    <input type="radio" name="pt_lookupType" id="pt_lookupTypeName" value="name" checked="checked" title="Search by Patient Name" /><label for="pt_lookupTypeName" title="Search by Patient Name">Patient Name</label>
-                    <input type="radio" name="pt_lookupType" id="pt_lookupTypeId" value="id" title="Search by Patient ID" /><label for="pt_lookupTypeId" title="Search by Patient ID">Patient ID</label>
+                    <input type="radio" name="pt_lookupType" id="pt_lookupTypeName" value="name" checked="checked" title="Search by Patient Name" onclick="setDefaultFocus();" /><label for="pt_lookupTypeName" title="Search by Patient Name">Patient Name</label>
+                    <input type="radio" name="pt_lookupType" id="pt_lookupTypeId" value="id" title="Search by Patient ID" onclick="setDefaultFocus();" /><label for="pt_lookupTypeId" title="Search by Patient ID">Patient ID</label>
                 </div>
                 <div class="large-2 columns">
-                    <a id="lookUp" type="submit" class="button expanded">Look Up</a>
+                    <a id="lookUp" type="submit" class="button expanded" onclick="setDefaultFocus();">Look Up</a>
                 </div>
                 
                 <br/>
