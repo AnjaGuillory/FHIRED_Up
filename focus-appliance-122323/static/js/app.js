@@ -265,10 +265,16 @@ function setUpBarChart(container, data){
             }
         },
         series: [{
-            name: 'Risk',
-            data: data.values
-        }]
+            name: 'Current',
+            data: data.current_values
+        },
+        {
+            name: 'Candidate',
+            data: data.candidate_values
+        }
+        ]
     });
+
 
 }
 

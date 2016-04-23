@@ -81,9 +81,10 @@ class Hcc:
 
 
 class RiskDistribution:
-    def __init__(self, name, risk_score):
+    def __init__(self, name, risk_score, is_candidate):
         self.name = name
         self.risk_score = risk_score
+        self.is_candidate = is_candidate;
 
     def for_chart(self):
-        return {"name": self.name, "y": self.risk_score}
+        return {"name": self.name, "y": self.risk_score, "c": self.is_candidate}

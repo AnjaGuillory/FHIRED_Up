@@ -151,12 +151,12 @@ class FHIRedUp():
         score_lists = list()
         for hcc_details in hccs:
             hcc = hcc_details.get_hcc()
-            score_lists.append(Entities.RiskDistribution(hcc.name, hcc.risk_score).for_chart())
+            score_lists.append(Entities.RiskDistribution(hcc.name, hcc.risk_score, False).for_chart())
 
         if include_candidate:
             candidate_hccs = self.get_candidate_hccs_for(pt_id, year, include_rejected)
             for candidate_hcc in candidate_hccs:
-                score_lists.append(Entities.RiskDistribution(candidate_hcc.name, candidate_hcc.risk_score).for_chart())
+                score_lists.append(Entities.RiskDistribution(candidate_hcc.name, candidate_hcc.risk_score, True).for_chart())
 
         return score_lists
 
@@ -165,12 +165,12 @@ class FHIRedUp():
         score_lists = list()
         for hcc_details in hccs:
             hcc = hcc_details.get_hcc()
-            score_lists.append(Entities.RiskDistribution(hcc.name, hcc.risk_score))
+            score_lists.append(Entities.RiskDistribution(hcc.name, hcc.risk_score, False))
 
         if include_candidate:
             candidate_hccs = self.get_candidate_hccs_for(pt_id, year, include_rejected)
             for candidate_hcc in candidate_hccs:
-                score_lists.append(Entities.RiskDistribution(candidate_hcc.name, candidate_hcc.risk_score))
+                score_lists.append(Entities.RiskDistribution(candidate_hcc.name, candidate_hcc.risk_score, True))
 
         return score_lists
 

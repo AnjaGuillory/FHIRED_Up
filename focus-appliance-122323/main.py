@@ -51,7 +51,7 @@ def render_view_hcc(status_list, action_name, request):
     snow_meds = fhir_up.get_snow_meds_for(code)
     return render_template('view_hcc.html', notes=hcc_detail.notes, pt_id=pt_id, status=status,
                            save_snow_meds=save_snow_meds, snow_meds=snow_meds,
-                           code=code, status_list=status_list, action_name=action_name)
+                           code=code, status_list=status_list, action_name=action_name, hcc=hcc_detail.get_hcc())
 
 
 @login_manager.user_loader
@@ -140,12 +140,14 @@ def analysis_table():
     risk_score = fhir_up.get_current_risk_score_for_pt(pt_id, include_rejected)
     risk_meter = min(((1 - (risk_score / (candidate_risk_score + risk_score))) * 100), 100)
 
-    bar_categories, bar_values = utils.get_categories_for_risks(score_lists)
+    bar_categories, bar_current_values, bar_candidate_values = utils.get_categories_for_risks(score_lists)
     data = {
         'current_risk_score': current_risk_score,
         'candidate_risk_score': candidate_risk_score,
         'pie_chart_data': score_distribution,
-        'bar_chart_data': {"categories": bar_categories, "values": bar_values}
+        'bar_chart_data': {"categories": bar_categories,
+                           "current_values": bar_current_values,
+                           "candidate_values": bar_candidate_values}
     }
     return render_template('analysis_table.html', data=data, risk_meter=risk_meter)
 
