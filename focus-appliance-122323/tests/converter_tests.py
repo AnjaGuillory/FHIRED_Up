@@ -23,3 +23,19 @@ class ConverterTests(unittest.TestCase):
         hcc = self.converter.to_hcc('000000')
 
         self.assertIsNone(hcc)
+
+    def test_convert_from_hcc(self):
+        snowmed = self.converter.from_hcc(hcc="3")
+
+        self.assertEqual(443, len(snowmed))
+
+    def test_fail_convert_from_hcc(self):
+        snowmed = self.converter.from_hcc(hcc="-3")
+
+        self.assertEqual(0, len(snowmed))
+
+    def test_gt_hcc_details(self):
+        hccDetails = self.converter.get_hcc_details("-3")
+        
+        self.assertEqual(None, hccDetails)
+
