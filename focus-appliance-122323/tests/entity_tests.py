@@ -35,6 +35,8 @@ class EntityTests(unittest.TestCase):
     def test_init_from_resource(self):
         patient = Patient.init_from_fhir_patient_resource(self.test_resource)
 
+        patient.get_diagnoses_list()
+
         self.assertEqual(1, patient.pt_id)
         self.assertEqual('John Smith', patient.name)
         self.assertEqual('01/01/1970', patient.dob)
